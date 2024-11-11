@@ -1,0 +1,6 @@
+@DvdShop_HostAddress = http://localhost:5092
+
+GET {{DvdShop_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
