@@ -5,16 +5,17 @@ namespace DvdShop.Entity
     public class Customer
     {
         [Key]
-        public Guid Id { get; set; }    
+        public Guid Id { get; set; }
+        public string NIC { get; set; }
         public string FirstName { get; set; }
-        public string LastName { get; set; } = string.Empty;
-        public int? Mobilenumber { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string Nic { get; set; }
-        public bool IsActive { get; set; } = true;
-        public string? Review { get; set; }
-        public string Password {  get; set; }
-        public ICollection<Address>? Address { get; set; }
+        public string LastName { get; set; }
+        public string Number { get; set; }
+        public DateTime JoinDate { get; set; }
 
+        public ICollection<Rental> Rentals { get; set; }
+        public ICollection<Review> Reviews { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public ICollection<Reservation> Reservations { get; set; }
     }
+
 }
