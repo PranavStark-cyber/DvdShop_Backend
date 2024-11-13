@@ -21,7 +21,7 @@ namespace DvdShop.Services
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var fromAddress = new MailAddress(_smtpUser, "YourAppName");
+            var fromAddress = new MailAddress(_smtpUser, "PranavStark");
             var toAddress = new MailAddress(to);
 
             using (var smtpClient = new SmtpClient(_smtpHost, _smtpPort))

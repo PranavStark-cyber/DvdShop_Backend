@@ -12,12 +12,12 @@ namespace DvdShop.Entity
         public string PhoneNumber { get; set; }
         public DateTime JoinDate { get; set; }
 
-        public ICollection<Rental> Rentals { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-        public ICollection<Review> Reviews { get; set; }
-        public ICollection<Reservation> Reservations { get; set; }
-        public ICollection<Notification> Notifications { get; set; }
-        public Address Address { get; set; }
+        public ICollection<Rental>? Rentals { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
+        public ICollection<Reservation>? Reservations { get; set; }
+        public ICollection<Notification>? Notifications { get; set; }
+        public Address? Address { get; set; }
     }
 
 }
