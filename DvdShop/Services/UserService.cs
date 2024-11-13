@@ -126,6 +126,26 @@ namespace DvdShop.Services
             Random rand = new Random();
             return rand.Next(100000, 999999).ToString();
         }
+
+        public async Task<string> LoginAsync(LoginDTO loginDTO)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(loginDTO.Email);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
+
+            var userRoles = await _roleRepository.GetUserRolesAsync(user.Id);
+
+            var token = _jwtTokenService.GenerateToken(user, userRoles);
+
+            return token;
+        }
     }
 
 

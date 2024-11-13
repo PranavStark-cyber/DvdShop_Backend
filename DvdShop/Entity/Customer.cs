@@ -6,6 +6,7 @@ namespace DvdShop.Entity
     {
         [Key]
         public Guid Id { get; set; }
+        public Guid UserRoleId { get; set; }
         public string Nic { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -18,6 +19,7 @@ namespace DvdShop.Entity
         public ICollection<Reservation>? Reservations { get; set; }
         public ICollection<Notification>? Notifications { get; set; }
         public Address? Address { get; set; }
+        public UserRole UserRole { get; set; }
     }
 
 }
