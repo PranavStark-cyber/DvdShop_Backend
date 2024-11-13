@@ -3,11 +3,12 @@
     public class Payment
     {
         public Guid Id { get; set; }
-        public Guid ReferenceId { get; set; } // Foreign key for Rental or other reference
-        public string Type { get; set; } // Enum for Payment Type (e.g., Credit, Debit)
+        public string ReferenceId { get; set; }
+        public string Type { get; set; }
         public decimal Amount { get; set; }
-
-        public Customer Customer { get; set; } // Navigation property for Customer (Many-to-One)
+        public Guid CustomerId { get; set; } // Foreign key for Customer
+        public Customer Customer { get; set; } // Navigation property
     }
+
 
 }

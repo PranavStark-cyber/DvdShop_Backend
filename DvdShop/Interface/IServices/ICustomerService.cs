@@ -5,8 +5,7 @@ namespace DvdShop.Interface.IServices
 {
     public interface ICustomerService
     {
-        Task<Customer> RegisterCustomer(RegisterDTO registerDTO);
-        Task<String> Login(LoginRequestDTO request);
+
 
     }
 }

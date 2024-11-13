@@ -2,7 +2,7 @@
 {
     public class Review
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public Guid CustomerId { get; set; } // Foreign key for Customer
         public Guid DvdId { get; set; } // Foreign key for DVD
         public DateTime ReviewDate { get; set; }

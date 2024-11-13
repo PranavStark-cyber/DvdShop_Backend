@@ -16,27 +16,6 @@ namespace DvdShop.Controllers
             _customerService = customerService;
         }
 
-        [HttpPost("RegisterUser")]
-        public async Task<IActionResult> RegisterCustomer(RegisterDTO registerDTO)
-        {
-          var data =  await _customerService.RegisterCustomer(registerDTO);
-
-            return Ok(data);
-        }
-
-        [HttpPost("login")]
-
-        public async Task<IActionResult> Login(LoginRequestDTO request)
-        {
-            try
-            {
-                var userDetails = await _customerService.Login(request);
-                return Ok(userDetails);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
     }
 }

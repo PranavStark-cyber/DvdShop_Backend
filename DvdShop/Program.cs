@@ -25,7 +25,9 @@ namespace DvdShop
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<DvdDbcontext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DvdConnection")));
+            builder.Services.AddDbContext<DvdStoreContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DvdConnection")));
+
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
