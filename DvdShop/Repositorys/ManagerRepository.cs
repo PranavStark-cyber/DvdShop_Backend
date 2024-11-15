@@ -103,6 +103,12 @@ namespace DvdShop.Repositorys
             return director;
         }
 
+        // Get Inventory by DVD ID
+        public async Task<Inventory> GetInventoryByDvdIdAsync(Guid dvdId)
+        {
+            return await _storeContext.Inventories.FirstOrDefaultAsync(i => i.DvdId == dvdId);
+        }
+
 
         public async Task<Inventory> AddInventoryAsync(Inventory inventory)
         {
@@ -114,6 +120,79 @@ namespace DvdShop.Repositorys
         public async Task<DVD> GetDvdByIdAsync(Guid id)
         {
             return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).FirstOrDefaultAsync(d => d.Id == id);
+        }
+
+        // Update DVD
+        public async Task<DVD> UpdateDvdAsync(DVD dvd)
+        {
+            _storeContext.DVDs.Update(dvd);
+            await _storeContext.SaveChangesAsync();
+            return dvd;
+        }
+
+        public async Task<string> DeleteDvdAsync(Guid id, int quantityToDelete)
+        {
+            var dvd = await _storeContext.DVDs.FirstOrDefaultAsync(d => d.Id == id);
+            if (dvd == null)
+            {
+                throw new KeyNotFoundException("DVD not found.");
+            }
+
+            var inventory = await _storeContext.Inventories.FirstOrDefaultAsync(i => i.DvdId == id);
+            if (inventory == null)
+            {
+                throw new KeyNotFoundException("Inventory for the specified DVD not found.");
+            }
+
+            if (inventory.AvailableCopies < quantityToDelete)
+            {
+                throw new InvalidOperationException("Not enough copies available to delete.");
+            }
+            if (inventory.TotalCopies < quantityToDelete)
+            {
+                throw new InvalidOperationException("Not enough copies available to delete.");
+            }
+
+            inventory.AvailableCopies -= quantityToDelete;
+            inventory.TotalCopies -= quantityToDelete;
+
+            if (inventory.AvailableCopies == 0 || inventory.TotalCopies == 0)
+            {
+                _storeContext.Inventories.Remove(inventory);
+                _storeContext.Inventories.Remove(inventory);
+            }
+            else
+            {
+                _storeContext.Inventories.Update(inventory);
+            }
+
+            await _storeContext.SaveChangesAsync();
+
+            return $"Successfully deleted {quantityToDelete} copies of '{dvd.Title}'.";
+        }
+
+
+        // Get All DVDs
+        public async Task<IEnumerable<DVD>> GetAllDvdsAsync()
+        {
+            return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).ToListAsync();
+        }
+
+        // Update Inventory
+        public async Task UpdateInventoryAsync(Inventory inventory)
+        {
+            _storeContext.Inventories.Update(inventory);
+            await _storeContext.SaveChangesAsync();
+        }
+
+     
+
+
+        // Remove Inventory
+        public async Task RemoveInventory(Inventory inventory)
+        {
+            _storeContext.Inventories.Remove(inventory);
+            await _storeContext.SaveChangesAsync();
         }
 
 

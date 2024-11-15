@@ -55,5 +55,45 @@ namespace DvdShop.Controllers
 
             return Ok(dvd);
         }
+
+        [HttpPut("UpdateDvd/{id}")]
+        public async Task<IActionResult> UpdateDvd(Guid id, [FromBody] CreateDvdDto updateDvdDto)
+        {
+            if (updateDvdDto == null)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            try
+            {
+                var updatedDvd = await _managerService.UpdateDvdAsync(id, updateDvdDto);
+                return Ok(updatedDvd);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPost("delete-dvd/{dvdId}")]
+        public async Task<IActionResult> DeleteDvd(Guid dvdId, [FromBody] int quantityToDelete)
+        {
+            try
+            {
+                var result = await _managerService.DeleteDvdAsync(dvdId, quantityToDelete);
+                return Ok(result); // Success message
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetAllDvds")]
+        public async Task<ActionResult<IEnumerable<DVD>>> GetAllDvds()
+        {
+            var dvds = await _managerService.GetAllDvdsAsync();
+            return Ok(dvds);
+        }
     }
 }
