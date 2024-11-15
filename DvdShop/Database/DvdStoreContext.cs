@@ -12,6 +12,8 @@ namespace DvdShop.Database
 
         public DbSet<DVD> DVDs { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<Director> Directors { get; set; }
+        public DbSet<Genre> Genres { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }

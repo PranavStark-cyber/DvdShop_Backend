@@ -32,6 +32,8 @@ namespace DvdShop
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
+            builder.Services.AddScoped<IManagerService, ManagerService>();
+            builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>

@@ -4,6 +4,7 @@ using DvdShop.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdShop.Migrations
 {
     [DbContext(typeof(DvdStoreContext))]
-    partial class DvdStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241114061115_init5")]
+    partial class init5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,7 +152,7 @@ namespace DvdShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Directors");
+                    b.ToTable("Director");
                 });
 
             modelBuilder.Entity("DvdShop.Entity.Genre", b =>
@@ -166,7 +169,7 @@ namespace DvdShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genre");
                 });
 
             modelBuilder.Entity("DvdShop.Entity.Inventory", b =>
