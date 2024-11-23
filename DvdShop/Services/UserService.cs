@@ -1,7 +1,12 @@
 ﻿using DvdShop.DTOs.Requests;
+using DvdShop.DTOs.Requests.Customers;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DvdShop.Services
 {
@@ -127,25 +132,51 @@ namespace DvdShop.Services
             return rand.Next(100000, 999999).ToString();
         }
 
-        //public async Task<string> LoginAsync(LoginDTO loginDTO)
-        //{
-        //    var user = await _userRepository.GetUserByEmailAsync(loginDTO.Email);
-        //    if (user == null)
-        //    {
-        //        throw new UnauthorizedAccessException("Invalid email or password.");
-        //    }
+        public async Task<string> LoginAsync(LoginRequestDTO loginDTO)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(loginDTO.Email);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
 
-        //    if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
-        //    {
-        //        throw new UnauthorizedAccessException("Invalid email or password.");
-        //    }
+            if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
 
-        //    var userRoles = await _roleRepository.GetUserRolesAsync(user.Id);
+            var userRoles = await _roleRepository.u(user.Id);
 
-        //    var token = _jwtTokenService.GenerateToken(user, userRoles);
 
-        //    return token;
-        //}
+
+            return token;
+        }
+
+
+        public string GenerateToken(User user)
+        {
+            var claimList = new List<Claim>();
+            claimList.Add(new Claim("UserId", user.Id.ToString()));
+            claimList.Add(new Claim("Name", user.));
+            claimList.Add(new Claim("Email", user.Email));
+            claimList.Add(new Claim("Role", user.Role.ToString()));
+
+
+
+            var key = _configuration["Jwt:Key"];
+            var secKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+            var credintial = new SigningCredentials(secKey, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claimList,
+                expires: DateTime.UtcNow.AddDays(1),
+                signingCredentials: credintial
+            );
+
+            var res = new JwtSecurityTokenHandler().WriteToken(token);
+            return res;
+        }
     }
 
 
