@@ -45,8 +45,7 @@ namespace DvdShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Addresses");
                 });
@@ -80,14 +79,9 @@ namespace DvdShop.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<Guid>("UserRoleId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("UserRoleId");
 
                     b.ToTable("Customers");
                 });
@@ -257,8 +251,7 @@ namespace DvdShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("OTPs");
                 });
@@ -434,9 +427,8 @@ namespace DvdShop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -491,8 +483,8 @@ namespace DvdShop.Migrations
             modelBuilder.Entity("DvdShop.Entity.Address", b =>
                 {
                     b.HasOne("DvdShop.Entity.User", "User")
-                        .WithOne("Address")
-                        .HasForeignKey("DvdShop.Entity.Address", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -505,15 +497,7 @@ namespace DvdShop.Migrations
                         .WithMany()
                         .HasForeignKey("AddressId");
 
-                    b.HasOne("DvdShop.Entity.UserRole", "UserRole")
-                        .WithMany()
-                        .HasForeignKey("UserRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Address");
-
-                    b.Navigation("UserRole");
                 });
 
             modelBuilder.Entity("DvdShop.Entity.DVD", b =>
@@ -553,7 +537,7 @@ namespace DvdShop.Migrations
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("DvdShop.Entity.User", "Receiver")
-                        .WithMany("Notifications")
+                        .WithMany()
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -564,8 +548,8 @@ namespace DvdShop.Migrations
             modelBuilder.Entity("DvdShop.Entity.OTP", b =>
                 {
                     b.HasOne("DvdShop.Entity.User", "User")
-                        .WithOne("OTP")
-                        .HasForeignKey("DvdShop.Entity.OTP", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -709,14 +693,6 @@ namespace DvdShop.Migrations
 
             modelBuilder.Entity("DvdShop.Entity.User", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
-
-                    b.Navigation("Notifications");
-
-                    b.Navigation("OTP")
-                        .IsRequired();
-
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

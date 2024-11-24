@@ -1,4 +1,6 @@
 ﻿using DvdShop.DTOs.Requests;
+using DvdShop.DTOs.Requests.Customers;
+using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 
 namespace DvdShop.Interface.IRepositorys
@@ -22,6 +24,9 @@ namespace DvdShop.Interface.IRepositorys
         Task AddVerificationOTPAsync(string email, string otp);
         Task<Customer> GetCustomerByEmailAsync(string email);
         Task UpdateCustomerAsync(Customer customer);
+        Task<Role> GetRoleById(Guid userId);
+        Task<UserRole> GetUserRoleByUserId(Guid userId);
+        Task<Customer> GetCustomerByIdAsync(Guid CustomerId);
     }
 
 }

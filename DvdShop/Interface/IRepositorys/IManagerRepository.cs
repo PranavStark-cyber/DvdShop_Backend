@@ -5,6 +5,7 @@ namespace DvdShop.Interface.IRepositorys
 {
     public interface IManagerRepository
     {
+        Task<Staff> GetStaffById(Guid StaffId);
         Task<DVD> AddDvdAsync(DVD dvd);
         Task<Genre> GetGenreByIdAsync(int genreId);
         Task<Director> GetDirectorByIdAsync(int directorId);

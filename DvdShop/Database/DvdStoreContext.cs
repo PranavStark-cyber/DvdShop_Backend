@@ -29,17 +29,6 @@ namespace DvdShop.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // One-to-One relationship between User and Address
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Address)
-                .WithOne(a => a.User)
-                .HasForeignKey<Address>(a => a.UserId);
-
-            // One-to-Many relationship between User and Notifications
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Notifications)
-                .WithOne(n => n.Receiver)
-                .HasForeignKey(n => n.ReceiverId);
 
             // Many-to-Many relationship between User and Role via UserRole
             modelBuilder.Entity<UserRole>()
@@ -116,12 +105,6 @@ namespace DvdShop.Database
             //     .HasMany(s => s.Customers)
             //     .WithOne(c => c.Staff)
             //     .HasForeignKey(c => c.StaffId);  // Uncomment if a Staff is associated with Customers
-
-            // One-to-Many relationship between User and OTP (One User has multiple OTPs)
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.OTP)  // User has one OTP
-                .WithOne(o => o.User) // OTP has one User
-                .HasForeignKey<OTP>(o => o.UserId); // Foreign key in OTP table
 
 
             // Optional: Enum handling for RentalStatus in Rental model

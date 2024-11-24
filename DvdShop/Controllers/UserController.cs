@@ -1,6 +1,8 @@
 ﻿using DvdShop.DTOs.Requests;
+using DvdShop.DTOs.Requests.Customers;
 using DvdShop.Interface.IServices;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DvdShop.Controllers
@@ -28,6 +30,21 @@ namespace DvdShop.Controllers
         {
             var result = await _userService.VerifyEmailAsync(verificationDTO);
             return Ok(new { message = result });
+        }
+
+        [HttpPost("Login")]
+         
+        public async Task<IActionResult> Login (LoginRequestDTO loginRequest)
+        {
+            try
+            {
+                var userdetails = await _userService.Login(loginRequest);
+                return Ok(userdetails);
+
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 

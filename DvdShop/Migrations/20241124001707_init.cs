@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DvdShop.Migrations
 {
     /// <inheritdoc />
-    public partial class init4 : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Director",
+                name: "Directors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -22,11 +22,11 @@ namespace DvdShop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Director", x => x.Id);
+                    table.PrimaryKey("PK_Directors", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Genre",
+                name: "Genres",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -35,7 +35,7 @@ namespace DvdShop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Genre", x => x.Id);
+                    table.PrimaryKey("PK_Genres", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,7 +57,7 @@ namespace DvdShop.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NIC = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,15 +95,15 @@ namespace DvdShop.Migrations
                 {
                     table.PrimaryKey("PK_DVDs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DVDs_Director_DirectorId",
+                        name: "FK_DVDs_Directors_DirectorId",
                         column: x => x.DirectorId,
-                        principalTable: "Director",
+                        principalTable: "Directors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DVDs_Genre_GenreId",
+                        name: "FK_DVDs_Genres_GenreId",
                         column: x => x.GenreId,
-                        principalTable: "Genre",
+                        principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -201,12 +201,13 @@ namespace DvdShop.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nic = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -215,6 +216,11 @@ namespace DvdShop.Migrations
                         name: "FK_Customers_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Customers_UserRoles_UserRoleId",
+                        column: x => x.UserRoleId,
+                        principalTable: "UserRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -301,9 +307,9 @@ namespace DvdShop.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Rentals_Director_DirectorId1",
+                        name: "FK_Rentals_Directors_DirectorId1",
                         column: x => x.DirectorId1,
-                        principalTable: "Director",
+                        principalTable: "Directors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -369,13 +375,17 @@ namespace DvdShop.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
                 table: "Addresses",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_AddressId",
                 table: "Customers",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_UserRoleId",
+                table: "Customers",
+                column: "UserRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DVDs_DirectorId",
@@ -406,8 +416,7 @@ namespace DvdShop.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_OTPs_UserId",
                 table: "OTPs",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_CustomerId",
@@ -488,25 +497,25 @@ namespace DvdShop.Migrations
                 name: "Staffs");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
-
-            migrationBuilder.DropTable(
                 name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "DVDs");
 
             migrationBuilder.DropTable(
-                name: "Roles");
-
-            migrationBuilder.DropTable(
                 name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "Director");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Genre");
+                name: "Directors");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");

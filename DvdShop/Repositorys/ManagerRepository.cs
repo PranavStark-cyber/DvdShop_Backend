@@ -14,6 +14,21 @@ namespace DvdShop.Repositorys
             _storeContext = storeContext;
         }
 
+        public async Task<Staff> GetStaffById(Guid StaffId)
+        {
+            var staff = await _storeContext.Staffs
+              .FirstOrDefaultAsync(c => c.Id == StaffId);
+
+
+            if (staff == null)
+            {
+                return null;
+            }
+
+
+
+            return staff;
+        }
 
         public async Task<DVD> AddDvdAsync(DVD dvd)
         {

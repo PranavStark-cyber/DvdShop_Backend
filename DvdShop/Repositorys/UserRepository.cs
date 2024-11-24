@@ -136,6 +136,48 @@ namespace DvdShop.Repositorys
             return customer;
         }
 
+        public async Task<Customer> GetCustomerByIdAsync(Guid CustomerId)
+        {
+            var customer = await _context.Customers
+              .FirstOrDefaultAsync(c => c.Id == CustomerId);
+
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+          
+
+            return customer;
+        }
+
+
+        public async Task<UserRole>GetUserRoleByUserId(Guid userId)
+        {
+            var user=await _context.UserRoles.FirstOrDefaultAsync(u=>u.UserId == userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user;
+
+        }
+
+        public async Task<Role> GetRoleById(Guid userId)
+        {
+            var user = await _context.Roles.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user;
+
+        }
 
         public async Task UpdateCustomerAsync(Customer customer)
         {
@@ -143,53 +185,7 @@ namespace DvdShop.Repositorys
             await _context.SaveChangesAsync();
         }
 
-        public async Task<LoginResponse> Login(LoginRequestDTO request)
-        {
-            var user = await _context.Users
-        .Include(u => u.UserRoles)  
-        .ThenInclude(ur => ur.Role) 
-        .FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            if (user == null)
-            {
-                throw new Exception("User not found");
-            }
-
-            var isLogin = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
-            if (isLogin)
-            {
-                var userRoleId = user.UserRoles.FirstOrDefault()?.Id;
-
-                if (userRoleId == null)
-                {
-                    throw new Exception("User has no associated role.");
-                }
-
-                var customer = await _context.Customers
-                    .Include(c => c.UserRole)  
-                    .ThenInclude(ur => ur.Role) 
-                    .FirstOrDefaultAsync(c => c.UserRoleId == userRoleId);
-
-                if (customer == null)
-                {
-                    throw new Exception("Customer not found for the user.");
-                }
-
-                var loginResponse = new LoginResponse
-                {
-                    Email = user.Email,
-                    fullname = $"{customer.FirstName} {customer.LastName}", 
-                    Role = customer.UserRole?.Role?.Name 
-                };
-
-                return loginResponse;
-            }
-            else
-            {
-                throw new Exception("Invalid password");
-            }
-        }
-
+        
     }
 
 }
