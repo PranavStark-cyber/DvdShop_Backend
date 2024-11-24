@@ -9,7 +9,7 @@ namespace DvdShop.Entity
         public string Nic { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
         public DateTime JoinDate { get; set; }
 
         public ICollection<Rental>? Rentals { get; set; }

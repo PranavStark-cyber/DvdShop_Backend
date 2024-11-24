@@ -115,7 +115,6 @@ namespace DvdShop.Services
                 Nic = registerDTO.Nic,
                 FirstName = registerDTO.FirstName,
                 LastName = registerDTO.LastName,
-                PhoneNumber = registerDTO.PhoneNumber,
                 JoinDate = DateTime.Now,
             };
 
