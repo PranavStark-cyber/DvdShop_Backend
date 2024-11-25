@@ -1,5 +1,6 @@
 ﻿using DvdShop.DTOs.Requests;
 using DvdShop.DTOs.Requests.Customers;
+using DvdShop.DTOs.Requests.Manager;
 using DvdShop.Interface.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
@@ -22,6 +23,13 @@ namespace DvdShop.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _userService.RegisterUserAsync(registerDTO);
+            return Ok(new { message = result });
+        }
+
+        [HttpPost("registerStaff")]
+        public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaff registerDTO)
+        {
+            var result = await _userService.RegisterManagerAsync(registerDTO);
             return Ok(new { message = result });
         }
 

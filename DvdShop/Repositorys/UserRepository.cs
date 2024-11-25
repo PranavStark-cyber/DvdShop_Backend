@@ -81,6 +81,12 @@ namespace DvdShop.Repositorys
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddStaffAsync(Staff staff)
+        {
+            _context.Staffs.Add(staff);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task AddUserRoleAsync(UserRole userRole)
         {
             _context.UserRoles.Add(userRole);

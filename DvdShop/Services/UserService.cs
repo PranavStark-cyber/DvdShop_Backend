@@ -1,6 +1,7 @@
 ﻿using DvdShop.DTOs;
 using DvdShop.DTOs.Requests;
 using DvdShop.DTOs.Requests.Customers;
+using DvdShop.DTOs.Requests.Manager;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
@@ -130,6 +131,59 @@ namespace DvdShop.Services
 
             return "Registration successful. Please verify your email.";
         }
+        public async Task<string> RegisterManagerAsync(RegisterStaff registerDTO)
+        {
+            var email = await _userRepository.GetUserByEmailAsync(registerDTO.Email);
+            if (email != null)
+            {
+                return "Email Already Used.";
+            }
+
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = registerDTO.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password),
+                IsConfirmed = false
+            };
+
+            var registeredUser = await _userRepository.RegisterUserAsync(user);
+            var managerRole = await _roleRepository.GetRoleByNameAsync("Manager");
+            if (managerRole == null)
+            {
+                managerRole = new Role { Name = "Manager" };
+                await _roleRepository.AddRoleAsync(managerRole);
+            }
+
+            var userRole = new UserRole
+            {
+                UserId = registeredUser.Id,
+                RoleId = managerRole.Id
+            };
+            await _userRepository.AddUserRoleAsync(userRole);
+
+            var staff = new Staff
+            {
+                Id = registeredUser.Id,
+                NIC = registerDTO.Nic,
+                FirstName = registerDTO.FirstName,
+                LastName = registerDTO.LastName,
+
+            };
+
+            await _userRepository.AddStaffAsync(staff);
+
+
+
+            var otp = GenerateOTP();
+            await _userRepository.AddVerificationOTPAsync(registeredUser.Email, otp);
+
+            var body = $"Dear {registerDTO.FirstName},\n\nYour email verification OTP is {otp}.\n\nBest Regards,\nYourAppName";
+            await _emailService.SendEmailAsync(registeredUser.Email, "Email Verification", body);
+
+            return "Registration successful. Please verify your email.";
+        }
 
         public async Task<string> VerifyEmailAsync(VerificationDTO verificationDTO)
         {
@@ -191,7 +245,7 @@ namespace DvdShop.Services
                     var tokenRequest = new TokenRequestDTO
                     {
                         Id = admindata.Id,
-                        Name = admindata.Name,
+                        Name = admindata.FirstName,
                         Email = user.Email,
                         Role = roledata.Name
                     };

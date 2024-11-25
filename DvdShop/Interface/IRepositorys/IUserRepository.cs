@@ -17,6 +17,7 @@ namespace DvdShop.Interface.IRepositorys
     {
         Task<User> RegisterUserAsync(User user);
         Task AddCustomerAsync(Customer customer);
+        Task AddStaffAsync(Staff staff);
         Task AddUserRoleAsync(UserRole userRole);
         Task UpdateUserAsync(User user);
         Task<User> GetUserByEmailAsync(string email);
