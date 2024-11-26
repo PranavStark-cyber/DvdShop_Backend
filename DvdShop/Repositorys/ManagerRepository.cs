@@ -193,6 +193,16 @@ namespace DvdShop.Repositorys
             return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).ToListAsync();
         }
 
+        public async Task<List<Genre>> GetGenre()
+        {
+            return await _storeContext.Genres.ToListAsync();
+        }
+
+        public async Task<List<Director>> GetDirector()
+        {
+            return await _storeContext.Directors.ToListAsync();
+        }
+
         // Update Inventory
         public async Task UpdateInventoryAsync(Inventory inventory)
         {

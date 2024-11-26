@@ -141,6 +141,14 @@ namespace DvdShop.Services
             return await _managerRepository.GetAllDvdsAsync();
         }
 
+        public async Task<List<Genre>> GetGenareAsync()
+        {
+            return await _managerRepository.GetGenre();
+        }
+        public async Task<List<Director>> GetDirectorAsync()
+        {
+            return await _managerRepository.GetDirector();
+        }
     }
 
 }

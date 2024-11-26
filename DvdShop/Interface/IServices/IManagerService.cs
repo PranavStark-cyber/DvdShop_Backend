@@ -10,5 +10,7 @@ namespace DvdShop.Interface.IServices
         Task<DVD> UpdateDvdAsync(Guid id, CreateDvdDto updateDvdDto);
         Task<string> DeleteDvdAsync(Guid id, int quantityToDelete);
         Task<IEnumerable<DVD>> GetAllDvdsAsync();
+        Task<List<Director>> GetDirectorAsync();
+        Task<List<Genre>> GetGenareAsync();
     }
 }
