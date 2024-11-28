@@ -171,20 +171,24 @@ namespace DvdShop.Repositorys
             inventory.AvailableCopies -= quantityToDelete;
             inventory.TotalCopies -= quantityToDelete;
 
+            // Check if the DVD has no remaining copies
             if (inventory.AvailableCopies == 0 || inventory.TotalCopies == 0)
             {
-                _storeContext.Inventories.Remove(inventory);
-                _storeContext.Inventories.Remove(inventory);
+                _storeContext.Inventories.Remove(inventory); // Remove the inventory record
+
+               
+                _storeContext.DVDs.Remove(dvd);
             }
             else
             {
-                _storeContext.Inventories.Update(inventory);
+                _storeContext.Inventories.Update(inventory); 
             }
 
             await _storeContext.SaveChangesAsync();
 
             return $"Successfully deleted {quantityToDelete} copies of '{dvd.Title}'.";
         }
+
 
 
         // Get All DVDs

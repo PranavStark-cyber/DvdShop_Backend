@@ -57,7 +57,7 @@ namespace DvdShop.Controllers
         }
 
         [HttpPut("UpdateDvd/{id}")]
-        public async Task<IActionResult> UpdateDvd(Guid id, [FromBody] CreateDvdDto updateDvdDto)
+        public async Task<IActionResult> UpdateDvd(Guid id, CreateDvdDto updateDvdDto)
         {
             if (updateDvdDto == null)
             {
@@ -88,6 +88,7 @@ namespace DvdShop.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpGet("GetAllDvds")]
         public async Task<ActionResult<IEnumerable<DVD>>> GetAllDvds()
