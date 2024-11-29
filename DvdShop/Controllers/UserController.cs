@@ -22,8 +22,21 @@ namespace DvdShop.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            var result = await _userService.RegisterUserAsync(registerDTO);
-            return Ok(new { message = result });
+            try
+            {
+                var result = await _userService.RegisterUserAsync(registerDTO);
+                return Ok(new { message = result }); 
+            }
+            catch (InvalidOperationException ex)
+            {
+              
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+               
+                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPost("registerStaff")]
@@ -33,11 +46,26 @@ namespace DvdShop.Controllers
             return Ok(new { message = result });
         }
 
+
         [HttpPost("verify")]
         public async Task<IActionResult> Verify([FromBody] VerificationDTO verificationDTO)
         {
-            var result = await _userService.VerifyEmailAsync(verificationDTO);
-            return Ok(new { message = result });
+            if (verificationDTO == null)
+            {
+                return BadRequest(new { message = "Invalid request body." });
+            }
+
+            try
+            {
+                var result = await _userService.VerifyEmailAsync(verificationDTO);
+                return Ok(new { message = result });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., log to a file, database, or monitoring system)
+                // Example: _logger.LogError(ex, "Error during email verification.");
+                return StatusCode(500, new { message = "An internal error occurred. Please try again later." });
+            }
         }
 
         [HttpPost("Login")]

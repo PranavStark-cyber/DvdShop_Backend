@@ -83,15 +83,14 @@ namespace DvdShop.Services
             var email = await _userRepository.GetUserByEmailAsync(registerDTO.Email);
             if (email != null)
             {
-                return "Email Already Used.";
+                throw new InvalidOperationException("Email Already Used.");
             }
-
 
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 Email = registerDTO.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password), 
+                Password = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password),
                 IsConfirmed = false
             };
 
@@ -121,8 +120,6 @@ namespace DvdShop.Services
 
             await _userRepository.AddCustomerAsync(customer);
 
-           
-
             var otp = GenerateOTP();
             await _userRepository.AddVerificationOTPAsync(registeredUser.Email, otp);
 
@@ -131,6 +128,7 @@ namespace DvdShop.Services
 
             return "Registration successful. Please verify your email.";
         }
+
         public async Task<string> RegisterManagerAsync(RegisterStaff registerDTO)
         {
             var email = await _userRepository.GetUserByEmailAsync(registerDTO.Email);
@@ -187,15 +185,28 @@ namespace DvdShop.Services
 
         public async Task<string> VerifyEmailAsync(VerificationDTO verificationDTO)
         {
+            // Validate the OTP
             var isValid = await _userRepository.ValidateOTPAsync(verificationDTO.Email, verificationDTO.OTP);
-            if (!isValid) return "Invalid or expired OTP.";
+            if (!isValid)
+            {
+                throw new InvalidOperationException("Invalid or expired OTP.");
+            }
 
+            // Get the user by email
             var user = await _userRepository.GetUserByEmailAsync(verificationDTO.Email);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            // Mark the user as confirmed
             user.IsConfirmed = true;
             await _userRepository.UpdateUserAsync(user);
 
+            // Return success message
             return "Email successfully verified.";
         }
+
         private string GenerateOTP()
         {
             Random rand = new Random();
