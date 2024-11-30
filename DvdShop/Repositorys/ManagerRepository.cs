@@ -194,7 +194,7 @@ namespace DvdShop.Repositorys
         // Get All DVDs
         public async Task<IEnumerable<DVD>> GetAllDvdsAsync()
         {
-            return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).ToListAsync();
+            return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).Include(d=>d.Inventory).ToListAsync();
         }
 
         public async Task<List<Genre>> GetGenre()

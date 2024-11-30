@@ -5,7 +5,7 @@ namespace DvdShop.Interface.IServices
 {
     public interface ICustomerService
     {
-
-
+        Task<Customer> UpdateCustomerAsync(UpdateCustomerDTO customerDto);
+        Task<ICollection<Customer>> GetCustomers();
     }
 }
