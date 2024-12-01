@@ -6,21 +6,27 @@ namespace DvdShop.Interface.IRepositorys
     public interface IManagerRepository
     {
         Task<Staff> GetStaffById(Guid StaffId);
-        Task<DVD> AddDvdAsync(DVD dvd);
+        Task<DVD> AddDvd(DVD dvd);
         Task<List<Director>> GetDirector();
         Task<List<Genre>> GetGenre();
-        Task<Genre> GetGenreByIdAsync(int genreId);
-        Task<Director> GetDirectorByIdAsync(int directorId);
-        Task<Inventory> AddInventoryAsync(Inventory inventory);
-        Task<DVD> GetDvdByIdAsync(Guid id);
-        Task<Genre> GetOrCreateGenreAsync(int genreId, string genreName);
-        Task<Director> GetOrCreateDirectorAsync(int directorId, string directorName, string directordescription);
+        Task<Genre> GetGenreById(int genreId);
+        Task<Director> GetDirectorById(int directorId);
+        Task<Inventory> AddInventory(Inventory inventory);
+        Task<DVD> GetDvdById(Guid id);
+        Task<Genre> GetOrCreateGenre(int genreId, string genreName);
+        Task<Director> GetOrCreateDirector(int directorId, string directorName, string directordescription);
         Task RemoveInventory(Inventory inventory);
-        Task UpdateInventoryAsync(Inventory inventory);
-        Task<IEnumerable<DVD>> GetAllDvdsAsync();
-        Task<string> DeleteDvdAsync(Guid id, int quantityToDelete);
-        Task<DVD> UpdateDvdAsync(DVD dvd);
-        Task<Inventory> GetInventoryByDvdIdAsync(Guid dvdId);
+        Task UpdateInventory(Inventory inventory);
+        Task<IEnumerable<DVD>> GetAllDvds();
+        Task<string> DeleteDvd(Guid id, int quantityToDelete);
+        Task<DVD> UpdateDvd(DVD dvd);
+        Task<Inventory> GetInventoryByDvdId(Guid dvdId);
+
+
+        Task<List<Inventory>> GetWeeklyInventoryReport();
+        Task<List<Inventory>> GetMonthlyInventoryReport();
+        Task SendInventoryReportNotification(string title, string message);
+        Task<List<Inventory>> GetAllInventory();
 
 
     }

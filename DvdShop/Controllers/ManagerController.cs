@@ -34,7 +34,7 @@ namespace DvdShop.Controllers
 
             try
             {
-                var dvd = await _managerService.AddDvdAsync(createDvdDto);
+                var dvd = await _managerService.AddDvd(createDvdDto);
 
                 return CreatedAtAction(nameof(GetDvdById), new { id = dvd.Id }, dvd);
             }
@@ -47,7 +47,7 @@ namespace DvdShop.Controllers
         [HttpGet("GetDvdById{id}")]
         public async Task<ActionResult<DVD>> GetDvdById(Guid id)
         {
-            var dvd = await _managerService.GetDvdByIdAsync(id);
+            var dvd = await _managerService.GetDvdById(id);
             if (dvd == null)
             {
                 return NotFound();
@@ -66,7 +66,7 @@ namespace DvdShop.Controllers
 
             try
             {
-                var updatedDvd = await _managerService.UpdateDvdAsync(id, updateDvdDto);
+                var updatedDvd = await _managerService.UpdateDvd(id, updateDvdDto);
                 return Ok(updatedDvd);
             }
             catch (KeyNotFoundException ex)
@@ -80,7 +80,7 @@ namespace DvdShop.Controllers
         {
             try
             {
-                var result = await _managerService.DeleteDvdAsync(dvdId, quantityToDelete);
+                var result = await _managerService.DeleteDvd(dvdId, quantityToDelete);
                 return Ok(result); // Success message
             }
             catch (Exception ex)
@@ -93,21 +93,81 @@ namespace DvdShop.Controllers
         [HttpGet("GetAllDvds")]
         public async Task<ActionResult<IEnumerable<DVD>>> GetAllDvds()
         {
-            var dvds = await _managerService.GetAllDvdsAsync();
+            var dvds = await _managerService.GetAllDvds();
             return Ok(dvds);
         }
 
         [HttpGet("GetAllGenare")]
         public async Task<ActionResult<List<Genre>>> GetGenare()
         {
-            var genres = await _managerService.GetGenareAsync();
+            var genres = await _managerService.GetGenare();
             return Ok(genres);
         }
         [HttpGet("GetAllDirector")]
         public async Task<ActionResult<List<Director>>> GetDirector()
         {
-            var directors = await _managerService.GetDirectorAsync();
+            var directors = await _managerService.GetDirector();
             return Ok(directors);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllInventory()
+        {
+            try
+            {
+                var inventories = await _managerService.GetAllInventory();
+                return Ok(inventories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("weekly-report")]
+        public async Task<IActionResult> GetWeeklyReport()
+        {
+            try
+            {
+                var report = await _managerService.GetWeeklyInventoryReport();
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("monthly-report")]
+        public async Task<IActionResult> GetMonthlyReport()
+        {
+            try
+            {
+                var report = await _managerService.GetMonthlyInventoryReport();
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("send-report")]
+        public async Task<IActionResult> SendReport([FromQuery] string type)
+        {
+            try
+            {
+                await _managerService.SendInventoryReportNotification(type);
+                return Ok($"Inventory {type} report sent to managers.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

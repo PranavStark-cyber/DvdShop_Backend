@@ -20,10 +20,11 @@
 
     public enum RentalStatus
     {
-        Pending,
+        Request,
         Approved,
         Collected,
-        Returned
+        Returned,
+        Rejected
     }
 
 }

@@ -30,18 +30,18 @@ namespace DvdShop.Repositorys
             return staff;
         }
 
-        public async Task<DVD> AddDvdAsync(DVD dvd)
+        public async Task<DVD> AddDvd(DVD dvd)
         {
             _storeContext.DVDs.Add(dvd);
             await _storeContext.SaveChangesAsync();
             return dvd;
         }
 
-        public async Task<Genre> GetGenreByIdAsync(int genreId)
+        public async Task<Genre> GetGenreById(int genreId)
         {
             return await _storeContext.DVDs.Where(d => d.GenreId == genreId).Select(d => d.Genre).FirstOrDefaultAsync();
         }
-        public async Task<Director> GetDirectorByIdAsync(int directorId)
+        public async Task<Director> GetDirectorById(int directorId)
         {
             return await _storeContext.DVDs.Where(d => d.DirectorId == directorId).Select(d => d.Director).FirstOrDefaultAsync();
         }
@@ -65,7 +65,7 @@ namespace DvdShop.Repositorys
 
         //    return genre;
         //}
-        public async Task<Genre> GetOrCreateGenreAsync(int genreId, string genreName)
+        public async Task<Genre> GetOrCreateGenre(int genreId, string genreName)
         {
             Genre genre = null;
 
@@ -94,7 +94,7 @@ namespace DvdShop.Repositorys
         }
 
 
-        public async Task<Director> GetOrCreateDirectorAsync(int directorId, string directorName, string directorDescription)
+        public async Task<Director> GetOrCreateDirector(int directorId, string directorName, string directorDescription)
         {
             var director = await _storeContext.Directors.FirstOrDefaultAsync(d => d.Id == directorId);
 
@@ -119,33 +119,33 @@ namespace DvdShop.Repositorys
         }
 
         // Get Inventory by DVD ID
-        public async Task<Inventory> GetInventoryByDvdIdAsync(Guid dvdId)
+        public async Task<Inventory> GetInventoryByDvdId(Guid dvdId)
         {
             return await _storeContext.Inventories.FirstOrDefaultAsync(i => i.DvdId == dvdId);
         }
 
 
-        public async Task<Inventory> AddInventoryAsync(Inventory inventory)
+        public async Task<Inventory> AddInventory(Inventory inventory)
         {
             _storeContext.Inventories.Add(inventory);
             await _storeContext.SaveChangesAsync();
             return inventory;
         }
 
-        public async Task<DVD> GetDvdByIdAsync(Guid id)
+        public async Task<DVD> GetDvdById(Guid id)
         {
             return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).FirstOrDefaultAsync(d => d.Id == id);
         }
 
         // Update DVD
-        public async Task<DVD> UpdateDvdAsync(DVD dvd)
+        public async Task<DVD> UpdateDvd(DVD dvd)
         {
             _storeContext.DVDs.Update(dvd);
             await _storeContext.SaveChangesAsync();
             return dvd;
         }
 
-        public async Task<string> DeleteDvdAsync(Guid id, int quantityToDelete)
+        public async Task<string> DeleteDvd(Guid id, int quantityToDelete)
         {
             var dvd = await _storeContext.DVDs.FirstOrDefaultAsync(d => d.Id == id);
             if (dvd == null)
@@ -192,7 +192,7 @@ namespace DvdShop.Repositorys
 
 
         // Get All DVDs
-        public async Task<IEnumerable<DVD>> GetAllDvdsAsync()
+        public async Task<IEnumerable<DVD>> GetAllDvds()
         {
             return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).Include(d=>d.Inventory).ToListAsync();
         }
@@ -208,7 +208,7 @@ namespace DvdShop.Repositorys
         }
 
         // Update Inventory
-        public async Task UpdateInventoryAsync(Inventory inventory)
+        public async Task UpdateInventory(Inventory inventory)
         {
             _storeContext.Inventories.Update(inventory);
             await _storeContext.SaveChangesAsync();
@@ -224,6 +224,91 @@ namespace DvdShop.Repositorys
             await _storeContext.SaveChangesAsync();
         }
 
+        public async Task<List<Inventory>> GetAllInventory()
+        {
+            try
+            {
+                return await _storeContext.Inventories
+                                     .Include(i => i.Dvd)
+                                     .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching inventory from the database.", ex);
+            }
+        }
 
+        public async Task<List<Inventory>> GetWeeklyInventoryReport()
+        {
+            try
+            {
+                var oneWeekAgo = DateTime.Now.AddDays(-7);
+                return await _storeContext.Inventories
+                                     .Include(i => i.Dvd)
+                                     .Where(i => i.LastRestock >= oneWeekAgo)
+                                     .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching weekly inventory report.", ex);
+            }
+        }
+
+        public async Task<List<Inventory>> GetMonthlyInventoryReport()
+        {
+            try
+            {
+                var oneMonthAgo = DateTime.Now.AddMonths(-1);
+                return await _storeContext.Inventories
+                                     .Include(i => i.Dvd)
+                                     .Where(i => i.LastRestock >= oneMonthAgo)
+                                     .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching monthly inventory report.", ex);
+            }
+        }
+
+        public async Task SendInventoryReportNotification(string title, string message)
+        {
+            try
+            {
+                // Fetch managers
+                var managers = await _storeContext.Users
+                               .Where(u => _storeContext.UserRoles
+                               .Where(ur => ur.UserId == u.Id)
+                               .Join(_storeContext.Roles,
+                                ur => ur.RoleId,
+                                r => r.Id,
+                                (ur, r) => r.Name)
+                               .Contains("Manager"))
+                               .ToListAsync();
+
+                if (!managers.Any())
+                {
+                    throw new Exception("No managers found to send notifications.");
+                }
+
+                // Create notifications for managers
+                var notifications = managers.Select(manager => new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    ReceiverId = manager.Id,
+                    Title = title,
+                    Message = message,
+                    ViewStatus = "Unread",
+                    Type = "Info",
+                    Date = DateTime.Now
+                }).ToList();
+
+                await _storeContext.Notifications.AddRangeAsync(notifications);
+                await _storeContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error sending inventory report notification.", ex);
+            }
+        }
     }
 }

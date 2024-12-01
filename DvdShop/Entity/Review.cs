@@ -6,7 +6,6 @@
         public Guid CustomerId { get; set; } // Foreign key for Customer
         public Guid DvdId { get; set; } // Foreign key for DVD
         public DateTime ReviewDate { get; set; }
-        public DateTime ReleaseDate { get; set; }
         public string Comment { get; set; }
         public int Rating { get; set; } // Rating from 1 to 5
 

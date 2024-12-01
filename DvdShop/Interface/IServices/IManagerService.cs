@@ -5,12 +5,16 @@ namespace DvdShop.Interface.IServices
 {
     public interface IManagerService
     {
-        Task<DVD> AddDvdAsync(CreateDvdDto createDvdDto);
-        Task<DVD> GetDvdByIdAsync(Guid id);
-        Task<DVD> UpdateDvdAsync(Guid id, CreateDvdDto updateDvdDto);
-        Task<string> DeleteDvdAsync(Guid id, int quantityToDelete);
-        Task<IEnumerable<DVD>> GetAllDvdsAsync();
-        Task<List<Director>> GetDirectorAsync();
-        Task<List<Genre>> GetGenareAsync();
+        Task<DVD> AddDvd(CreateDvdDto createDvdDto);
+        Task<DVD> GetDvdById(Guid id);
+        Task<DVD> UpdateDvd(Guid id, CreateDvdDto updateDvdDto);
+        Task<string> DeleteDvd(Guid id, int quantityToDelete);
+        Task<IEnumerable<DVD>> GetAllDvds();
+        Task<List<Director>> GetDirector();
+        Task<List<Genre>> GetGenare();
+        Task<List<Inventory>> GetAllInventory();
+        Task<List<Inventory>> GetWeeklyInventoryReport();
+        Task<List<Inventory>> GetMonthlyInventoryReport();
+        Task SendInventoryReportNotification(string type);
     }
 }

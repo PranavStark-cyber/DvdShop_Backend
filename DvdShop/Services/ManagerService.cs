@@ -15,11 +15,11 @@ namespace DvdShop.Services
         }
 
 
-        public async Task<DVD> AddDvdAsync(CreateDvdDto createDvdDto)
+        public async Task<DVD> AddDvd(CreateDvdDto createDvdDto)
         {
-            var genre = await _managerRepository.GetOrCreateGenreAsync(createDvdDto.GenreId, createDvdDto.GenreName);
+            var genre = await _managerRepository.GetOrCreateGenre(createDvdDto.GenreId, createDvdDto.GenreName);
 
-            var director = await _managerRepository.GetOrCreateDirectorAsync(createDvdDto.DirectorId, createDvdDto.DirectorName, createDvdDto.DirectorDescription);
+            var director = await _managerRepository.GetOrCreateDirector(createDvdDto.DirectorId, createDvdDto.DirectorName, createDvdDto.DirectorDescription);
 
             var dvd = new DVD
             {
@@ -36,7 +36,7 @@ namespace DvdShop.Services
                 Reservations = new List<Reservation>()
             };
 
-            var addedDvd = await _managerRepository.AddDvdAsync(dvd);
+            var addedDvd = await _managerRepository.AddDvd(dvd);
 
             var inventory = new Inventory
             {
@@ -48,7 +48,7 @@ namespace DvdShop.Services
                 Dvd = addedDvd
             };
 
-            await _managerRepository.AddInventoryAsync(inventory);
+            await _managerRepository.AddInventory(inventory);
 
             return addedDvd;
         }
@@ -56,15 +56,15 @@ namespace DvdShop.Services
 
 
 
-        public async Task<DVD> GetDvdByIdAsync(Guid id)
+        public async Task<DVD> GetDvdById(Guid id)
         {
-            return await _managerRepository.GetDvdByIdAsync(id);
+            return await _managerRepository.GetDvdById(id);
         }
 
         // Update DVD
-        public async Task<DVD> UpdateDvdAsync(Guid id, CreateDvdDto updateDvdDto)
+        public async Task<DVD> UpdateDvd(Guid id, CreateDvdDto updateDvdDto)
         {
-            var dvd = await _managerRepository.GetDvdByIdAsync(id);
+            var dvd = await _managerRepository.GetDvdById(id);
             if (dvd == null)
             {
                 throw new KeyNotFoundException("DVD not found.");
@@ -85,26 +85,26 @@ namespace DvdShop.Services
 
             dvd.ImageUrl = updateDvdDto.ImageUrl ?? dvd.ImageUrl;
 
-            var genre = await _managerRepository.GetOrCreateGenreAsync(updateDvdDto.GenreId, updateDvdDto.GenreName);
+            var genre = await _managerRepository.GetOrCreateGenre(updateDvdDto.GenreId, updateDvdDto.GenreName);
             dvd.GenreId = genre.Id;
 
-            var director = await _managerRepository.GetOrCreateDirectorAsync(updateDvdDto.DirectorId, updateDvdDto.DirectorName, updateDvdDto.DirectorDescription);
+            var director = await _managerRepository.GetOrCreateDirector(updateDvdDto.DirectorId, updateDvdDto.DirectorName, updateDvdDto.DirectorDescription);
             dvd.DirectorId = director.Id;
 
-            var updatedDvd = await _managerRepository.UpdateDvdAsync(dvd);
+            var updatedDvd = await _managerRepository.UpdateDvd(dvd);
 
-            var inventory = await _managerRepository.GetInventoryByDvdIdAsync(dvd.Id);
+            var inventory = await _managerRepository.GetInventoryByDvdId(dvd.Id);
             if (inventory != null)
             {
                 inventory.TotalCopies = updateDvdDto.TotalCopies;
                 inventory.AvailableCopies = updateDvdDto.TotalCopies;
-                await _managerRepository.UpdateInventoryAsync(inventory);
+                await _managerRepository.UpdateInventory(inventory);
             }
 
             return updatedDvd;
         }
 
-        public async Task<string> DeleteDvdAsync(Guid id, int quantityToDelete)
+        public async Task<string> DeleteDvd(Guid id, int quantityToDelete)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace DvdShop.Services
                     throw new ArgumentException("Quantity to delete must be greater than zero.", nameof(quantityToDelete));
                 }
 
-                string result = await _managerRepository.DeleteDvdAsync(id, quantityToDelete);
+                string result = await _managerRepository.DeleteDvd(id, quantityToDelete);
 
                 return result;
             }
@@ -136,18 +136,85 @@ namespace DvdShop.Services
         }
 
 
-        public async Task<IEnumerable<DVD>> GetAllDvdsAsync()
+        public async Task<IEnumerable<DVD>> GetAllDvds()
         {
-            return await _managerRepository.GetAllDvdsAsync();
+            return await _managerRepository.GetAllDvds();
         }
 
-        public async Task<List<Genre>> GetGenareAsync()
+        public async Task<List<Genre>> GetGenare()
         {
             return await _managerRepository.GetGenre();
         }
-        public async Task<List<Director>> GetDirectorAsync()
+        public async Task<List<Director>> GetDirector()
         {
             return await _managerRepository.GetDirector();
+        }
+
+        public async Task<List<Inventory>> GetAllInventory()
+        {
+            try
+            {
+                return await _managerRepository.GetAllInventory();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching all inventory.", ex);
+            }
+        }
+
+        public async Task<List<Inventory>> GetWeeklyInventoryReport()
+        {
+            try
+            {
+                return await _managerRepository.GetWeeklyInventoryReport();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching the weekly inventory report.", ex);
+            }
+        }
+
+        public async Task<List<Inventory>> GetMonthlyInventoryReport()
+        {
+            try
+            {
+                return await _managerRepository.GetMonthlyInventoryReport();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching the monthly inventory report.", ex);
+            }
+        }
+
+        public async Task SendInventoryReportNotification(string type)
+        {
+            try
+            {
+                List<Inventory> report;
+
+                if (type == "Weekly")
+                {
+                    report = await GetWeeklyInventoryReport();
+                }
+                else if (type == "Monthly")
+                {
+                    report = await GetMonthlyInventoryReport();
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid report type. Use 'Weekly' or 'Monthly'.");
+                }
+
+                var message = $"Inventory Report ({type}):\n\n" +
+                              string.Join("\n", report.Select(i =>
+                                  $"- {i.Dvd.Title}: {i.AvailableCopies}/{i.TotalCopies} available"));
+
+                await _managerRepository.SendInventoryReportNotification($"Inventory {type} Report", message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while sending the inventory report notification.", ex);
+            }
         }
     }
 
