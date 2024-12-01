@@ -27,113 +27,113 @@ namespace DvdShop.Database
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+    //    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //    {
 
-            // Many-to-Many relationship between User and Role via UserRole
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId);
+    //        // Many-to-Many relationship between User and Role via UserRole
+    //        modelBuilder.Entity<UserRole>()
+    //            .HasOne(ur => ur.User)
+    //            .WithMany(u => u.UserRoles)
+    //            .HasForeignKey(ur => ur.UserId);
 
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleId);
+    //        modelBuilder.Entity<UserRole>()
+    //            .HasOne(ur => ur.Role)
+    //            .WithMany(r => r.UserRoles)
+    //            .HasForeignKey(ur => ur.RoleId);
 
-            // One-to-Many relationship between Customer and Rentals
-            modelBuilder.Entity<Rental>()
-    .HasOne(r => r.DVD)
-    .WithMany(d => d.Rentals)
-    .HasForeignKey(r => r.DvdId)
-    .OnDelete(DeleteBehavior.Restrict); // Restrict cascade delete for DVD
+    //        // One-to-Many relationship between Customer and Rentals
+    //        modelBuilder.Entity<Rental>()
+    //.HasOne(r => r.DVD)
+    //.WithMany(d => d.Rentals)
+    //.HasForeignKey(r => r.DvdId)
+    //.OnDelete(DeleteBehavior.Restrict); // Restrict cascade delete for DVD
 
-            modelBuilder.Entity<Rental>()
-                .HasOne(r => r.Customer)
-                .WithMany(c => c.Rentals)
-                .HasForeignKey(r => r.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
+    //        modelBuilder.Entity<Rental>()
+    //            .HasOne(r => r.Customer)
+    //            .WithMany(c => c.Rentals)
+    //            .HasForeignKey(r => r.CustomerId)
+    //            .OnDelete(DeleteBehavior.Restrict);
 
-            // One-to-Many relationship between Customer and Payments
-            modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Customer)
-                .WithMany(c => c.Payments)
-                .HasForeignKey(p => p.CustomerId);
+    //        // One-to-Many relationship between Customer and Payments
+    //        modelBuilder.Entity<Payment>()
+    //            .HasOne(p => p.Customer)
+    //            .WithMany(c => c.Payments)
+    //            .HasForeignKey(p => p.CustomerId);
 
-            // One-to-Many relationship between DVD and Reviews
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.DVD)
-                .WithMany(d => d.Reviews)
-                .HasForeignKey(r => r.DvdId);
+    //        // One-to-Many relationship between DVD and Reviews
+    //        modelBuilder.Entity<Review>()
+    //            .HasOne(r => r.DVD)
+    //            .WithMany(d => d.Reviews)
+    //            .HasForeignKey(r => r.DvdId);
 
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.Customer)
-                .WithMany(c => c.Reviews)
-                .HasForeignKey(r => r.CustomerId);
+    //        modelBuilder.Entity<Review>()
+    //            .HasOne(r => r.Customer)
+    //            .WithMany(c => c.Reviews)
+    //            .HasForeignKey(r => r.CustomerId);
 
-            // One-to-One relationship between DVD and Inventory
-            modelBuilder.Entity<Inventory>()
-                .HasOne(i => i.Dvd)
-                .WithOne(d => d.Inventory)
-                .HasForeignKey<Inventory>(i => i.DvdId);
+    //        // One-to-One relationship between DVD and Inventory
+    //        modelBuilder.Entity<Inventory>()
+    //            .HasOne(i => i.Dvd)
+    //            .WithOne(d => d.Inventory)
+    //            .HasForeignKey<Inventory>(i => i.DvdId);
 
-            // One-to-Many relationship between DVD and Reservations
-            modelBuilder.Entity<Reservation>()
-                .HasOne(res => res.DVD)
-                .WithMany(d => d.Reservations)
-                .HasForeignKey(res => res.DvdId);
+    //        // One-to-Many relationship between DVD and Reservations
+    //        modelBuilder.Entity<Reservation>()
+    //            .HasOne(res => res.DVD)
+    //            .WithMany(d => d.Reservations)
+    //            .HasForeignKey(res => res.DvdId);
 
-            modelBuilder.Entity<Reservation>()
-                .HasOne(res => res.Customer)
-                .WithMany(c => c.Reservations)
-                .HasForeignKey(res => res.CustomerId);
+    //        modelBuilder.Entity<Reservation>()
+    //            .HasOne(res => res.Customer)
+    //            .WithMany(c => c.Reservations)
+    //            .HasForeignKey(res => res.CustomerId);
 
-            // One-to-Many relationship between Genre and DVDs
-            modelBuilder.Entity<DVD>()
-                .HasOne(d => d.Genre)
-                .WithMany(g => g.DVDs)
-                .HasForeignKey(d => d.GenreId);
+    //        // One-to-Many relationship between Genre and DVDs
+    //        modelBuilder.Entity<DVD>()
+    //            .HasOne(d => d.Genre)
+    //            .WithMany(g => g.DVDs)
+    //            .HasForeignKey(d => d.GenreId);
 
-            // One-to-Many relationship between Director and DVDs
-            modelBuilder.Entity<DVD>()
-                .HasOne(d => d.Director)
-                .WithMany(dir => dir.DVDs)
-                .HasForeignKey(d => d.DirectorId);
+    //        // One-to-Many relationship between Director and DVDs
+    //        modelBuilder.Entity<DVD>()
+    //            .HasOne(d => d.Director)
+    //            .WithMany(dir => dir.DVDs)
+    //            .HasForeignKey(d => d.DirectorId);
 
-            // One-to-Many relationship between Staff and Customers (optional, if required)
-            // modelBuilder.Entity<Staff>()
-            //     .HasMany(s => s.Customers)
-            //     .WithOne(c => c.Staff)
-            //     .HasForeignKey(c => c.StaffId);  // Uncomment if a Staff is associated with Customers
+    //        // One-to-Many relationship between Staff and Customers (optional, if required)
+    //        // modelBuilder.Entity<Staff>()
+    //        //     .HasMany(s => s.Customers)
+    //        //     .WithOne(c => c.Staff)
+    //        //     .HasForeignKey(c => c.StaffId);  // Uncomment if a Staff is associated with Customers
 
 
-            // Optional: Enum handling for RentalStatus in Rental model
-            modelBuilder.Entity<Rental>()
-                .Property(r => r.Status)
-                .HasConversion(
-                    v => v.ToString(),
-                    v => (RentalStatus)Enum.Parse(typeof(RentalStatus), v));
+    //        // Optional: Enum handling for RentalStatus in Rental model
+    //        modelBuilder.Entity<Rental>()
+    //            .Property(r => r.Status)
+    //            .HasConversion(
+    //                v => v.ToString(),
+    //                v => (RentalStatus)Enum.Parse(typeof(RentalStatus), v));
 
-            // Optional: Length constraints on string fields
-            modelBuilder.Entity<User>()
-                .Property(u => u.Email)
-                .HasMaxLength(255)
-                .IsRequired();
+    //        // Optional: Length constraints on string fields
+    //        modelBuilder.Entity<User>()
+    //            .Property(u => u.Email)
+    //            .HasMaxLength(255)
+    //            .IsRequired();
 
-            modelBuilder.Entity<User>()
-                .Property(u => u.Password)
-                .HasMaxLength(255)
-                .IsRequired();
+    //        modelBuilder.Entity<User>()
+    //            .Property(u => u.Password)
+    //            .HasMaxLength(255)
+    //            .IsRequired();
 
-            modelBuilder.Entity<Customer>()
-                .Property(c => c.PhoneNumber)
-                .HasMaxLength(15); // Set phone number length
+    //        modelBuilder.Entity<Customer>()
+    //            .Property(c => c.PhoneNumber)
+    //            .HasMaxLength(15); // Set phone number length
 
-            modelBuilder.Entity<Staff>()
-                .Property(s => s.NIC)
-                .HasMaxLength(20); // Set NIC length
+    //        modelBuilder.Entity<Staff>()
+    //            .Property(s => s.NIC)
+    //            .HasMaxLength(20); // Set NIC length
 
-            base.OnModelCreating(modelBuilder);
-        }
+    //        base.OnModelCreating(modelBuilder);
+    //    }
     }
 }

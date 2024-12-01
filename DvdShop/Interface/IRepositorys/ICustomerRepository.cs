@@ -11,6 +11,7 @@ namespace DvdShop.Interface.IRepositorys
         Task<bool> DeleteCustomer(Guid customerId);
         Task<bool> DVDExistsAsync(Guid dvdId);
         Task<bool> CustomerExistsAsync(Guid customerId);
+        Task<User> GetUserById(Guid UserId);
         Task<bool> AddReviewAsync(Review review);
 
 

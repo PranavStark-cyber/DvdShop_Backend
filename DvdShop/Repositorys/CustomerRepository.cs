@@ -18,8 +18,12 @@ namespace DvdShop.Repositorys
 
         public async Task<ICollection<Customer>> GetCustomers()
         {
-          return  await _dbcontext.Customers.Include(ad=>ad.Address).Include(re=>re.Rentals).Include(re => re.Reviews).Include(re => re.Payments).Include(re => re.Notifications).ToListAsync();
-           
+          return  await _dbcontext.Customers.Include(ad=>ad.Address).Include(re=>re.Rentals).Include(re => re.Reviews).Include(re => re.Payments).Include(re => re.Notifications).ToListAsync();  
+        }
+
+        public async Task<User> GetUserById(Guid UserId )
+        {
+            return await _dbcontext.Users.FirstOrDefaultAsync(u=>u.Id == UserId);        
         }
 
         public async Task<Customer?> GetCustomerById(Guid id)

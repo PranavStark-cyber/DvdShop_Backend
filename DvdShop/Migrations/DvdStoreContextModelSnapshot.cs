@@ -36,16 +36,17 @@ namespace DvdShop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
 
                     b.ToTable("Addresses");
                 });
@@ -54,9 +55,6 @@ namespace DvdShop.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AddressId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
@@ -75,12 +73,9 @@ namespace DvdShop.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.ToTable("Customers");
                 });
@@ -312,9 +307,8 @@ namespace DvdShop.Migrations
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -419,8 +413,7 @@ namespace DvdShop.Migrations
 
                     b.Property<string>("NIC")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
@@ -438,16 +431,14 @@ namespace DvdShop.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -477,22 +468,13 @@ namespace DvdShop.Migrations
 
             modelBuilder.Entity("DvdShop.Entity.Address", b =>
                 {
-                    b.HasOne("DvdShop.Entity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("DvdShop.Entity.Customer", "Customer")
+                        .WithOne("Address")
+                        .HasForeignKey("DvdShop.Entity.Address", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DvdShop.Entity.Customer", b =>
-                {
-                    b.HasOne("DvdShop.Entity.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.Navigation("Address");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("DvdShop.Entity.DVD", b =>
@@ -567,13 +549,13 @@ namespace DvdShop.Migrations
                     b.HasOne("DvdShop.Entity.Customer", "Customer")
                         .WithMany("Rentals")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DvdShop.Entity.DVD", "DVD")
                         .WithMany("Rentals")
                         .HasForeignKey("DvdId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -640,6 +622,8 @@ namespace DvdShop.Migrations
 
             modelBuilder.Entity("DvdShop.Entity.Customer", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("Payments");

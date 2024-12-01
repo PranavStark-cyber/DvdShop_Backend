@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using DvdShop.DTOs.Requests.Customers;
+using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
@@ -23,12 +24,39 @@ namespace DvdShop.Services
             return await _customerRepository.GetCustomers();
         }
 
-        public async Task<Customer?> GetCustomerById(Guid customerId)
+        public async Task<CustomerResponseDTO?> GetCustomerById(Guid customerId)
         {
             try
             {
                 var customer = await _customerRepository.GetCustomerById(customerId);
-                return customer;
+                var user = await _customerRepository.GetUserById(customerId);
+
+                var address = new AddressResponse
+                {
+                    Id=customer.Address.Id,
+                    Street = customer.Address.Street,
+                    City = customer.Address.City,
+                    Country = customer.Address.Country,
+                };
+
+                var customerdata = new CustomerResponseDTO
+                {
+                    Id = customerId,
+                    Email=user.Email,
+                    Nic=customer.Nic,
+                    FirstName=customer.FirstName,
+                    LastName=customer.LastName,
+                    PhoneNumber=customer.PhoneNumber,
+                    JoinDate=customer.JoinDate,
+                    Payments=customer.Payments,
+                    Address=address,
+                    Rentals=customer.Rentals,
+                    Reservations=customer.Reservations,
+                    Reviews=customer.Reviews,
+                    Notifications=customer.Notifications,
+
+                };
+                return customerdata;
             }
             catch (KeyNotFoundException ex)
             {
