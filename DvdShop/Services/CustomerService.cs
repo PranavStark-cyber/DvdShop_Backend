@@ -66,7 +66,7 @@ namespace DvdShop.Services
                     customer.Address = new Address
                     {
                         Id = Guid.NewGuid(),
-                        UserId = customer.Id,
+                        CustomerId = customer.Id,
                         Street = customerDto.Address.Street,
                         City = customerDto.Address.City,
                         Country = customerDto.Address.Country

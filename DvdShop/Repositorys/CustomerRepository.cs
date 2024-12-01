@@ -16,7 +16,7 @@ namespace DvdShop.Repositorys
         }
 
 
-        public async Task<ICollection<Customer>> GetCustomers( )
+        public async Task<ICollection<Customer>> GetCustomers()
         {
           return  await _dbcontext.Customers.Include(ad=>ad.Address).Include(re=>re.Rentals).Include(re => re.Reviews).Include(re => re.Payments).Include(re => re.Notifications).ToListAsync();
            
