@@ -7,7 +7,7 @@ namespace DvdShop.Services
     public class RentalService:IRentalService
     {
         private readonly IRentalRepository _rentalRepository;
-    private readonly INotificationRepository _notificationRepository;
+      private readonly INotificationRepository _notificationRepository;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPaymentService _paymentService;
 

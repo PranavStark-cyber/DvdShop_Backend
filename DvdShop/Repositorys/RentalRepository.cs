@@ -17,12 +17,12 @@ namespace DvdShop.Repositorys
 
         public async Task<IEnumerable<Rental>> GetAllRentals()
         {
-            return await _rentalcontext.Rentals.Include(r => r.DVD).Include(r => r.Customer).Include(r => r.Director).ToListAsync();
+            return await _rentalcontext.Rentals.Include(r => r.DVD).Include(r => r.Customer).ToListAsync();
         }
 
         public async Task<Rental> GetRentalById(Guid id)
         {
-            return await _rentalcontext.Rentals.Include(r => r.DVD).Include(r => r.Customer).Include(r => r.Director).FirstOrDefaultAsync(r => r.Id == id);
+            return await _rentalcontext.Rentals.Include(r => r.DVD).Include(r => r.Customer).FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task CreateRental(Rental rental)
@@ -53,7 +53,6 @@ namespace DvdShop.Repositorys
                                  .Where(r => r.CustomerId == customerId)
                                  .Include(r => r.DVD)
                                  .Include(r => r.Customer)
-                                 .Include(r => r.Director)
                                  .ToListAsync();
         }
 

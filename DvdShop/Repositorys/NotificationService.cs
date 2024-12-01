@@ -37,6 +37,29 @@ namespace DvdShop.Repositorys
             }
         }
 
+        public async Task SendNotification(Guid receiverId, string title, string message, string type = "Warning")
+        {
+            try
+            {
+                var notification = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    ReceiverId = receiverId,
+                    Title = title,
+                    Message = message,
+                    Type = type,
+                    ViewStatus = "Unread", // Default status
+                    Date = DateTime.Now
+                };
+
+                await _notificationRepository.AddNotification(notification);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error sending notification.", ex);
+            }
+        }
+
         public async Task<List<Notification>> GetNotificationsAsync(Guid userId)
         {
             return await _notificationRepository.GetNotificationsByUserId(userId);

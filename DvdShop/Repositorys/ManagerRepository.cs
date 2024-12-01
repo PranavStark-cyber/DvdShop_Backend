@@ -134,7 +134,7 @@ namespace DvdShop.Repositorys
 
         public async Task<DVD> GetDvdById(Guid id)
         {
-            return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).FirstOrDefaultAsync(d => d.Id == id);
+            return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).Include(d=>d.Inventory).FirstOrDefaultAsync(d => d.Id == id);
         }
 
         // Update DVD
