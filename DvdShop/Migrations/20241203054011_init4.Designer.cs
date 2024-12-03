@@ -4,6 +4,7 @@ using DvdShop.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdShop.Migrations
 {
     [DbContext(typeof(DvdStoreContext))]
-    partial class DvdStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241203054011_init4")]
+    partial class init4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,9 +295,6 @@ namespace DvdShop.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DirectorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("DvdId")
                         .HasColumnType("uniqueidentifier");
 
@@ -351,11 +351,9 @@ namespace DvdShop.Migrations
 
             modelBuilder.Entity("DvdShop.Entity.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comment")
                         .IsRequired()
