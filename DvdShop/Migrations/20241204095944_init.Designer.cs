@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdShop.Migrations
 {
     [DbContext(typeof(DvdStoreContext))]
-    [Migration("20241201092940_init")]
+    [Migration("20241204095944_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -295,9 +295,6 @@ namespace DvdShop.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DirectorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("DvdId")
                         .HasColumnType("uniqueidentifier");
 
@@ -354,11 +351,9 @@ namespace DvdShop.Migrations
 
             modelBuilder.Entity("DvdShop.Entity.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comment")
                         .IsRequired()
