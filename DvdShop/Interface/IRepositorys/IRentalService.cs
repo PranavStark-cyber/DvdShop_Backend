@@ -17,7 +17,7 @@ namespace DvdShop.Interface.IRepositorys
         Task<Rental> GetRentalById(Guid id);
         Task ApproveRental(Guid id);
         Task CollectRental(Guid id);
-        Task RequestRental(Rental rental);
+        Task RequestRental(CreateRentalDto createRentalDto);
         Task ReturnRental(Guid id);
         Task RejectRental(Guid id);
         Task<List<Rental>> GetRentalsByCustomerId(Guid customerId);

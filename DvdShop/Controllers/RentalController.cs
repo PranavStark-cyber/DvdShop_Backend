@@ -33,11 +33,25 @@ namespace DvdShop.Controllers
         }
 
         [HttpPost("request")]
-        public async Task<IActionResult> RequestRental([FromBody] Rental rental)
+        public async Task<IActionResult> RequestRental([FromBody] CreateRentalDto rental)
         {
-            await _rentalService.RequestRental(rental);
-            return Ok();
+            try
+            {
+                await _rentalService.RequestRental(rental);
+                return Ok(new { message = "Rental request submitted successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Return 404 Not Found if the customer is not found
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // General error handling
+                return StatusCode(500, new { message = "An error occurred while processing the request.", details = ex.Message });
+            }
         }
+
 
         [HttpPut("approve/{id}")]
         public async Task<IActionResult> ApproveRental(Guid id)

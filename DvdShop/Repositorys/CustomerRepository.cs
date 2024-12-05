@@ -30,23 +30,20 @@ namespace DvdShop.Repositorys
         {
             try
             {
-                var customer= await _dbcontext.Customers
-                                     .Include(c => c.Address)
-                                     .Include(c => c.Rentals)    // Include Rentals if needed
-                                     .Include(c => c.Payments)   // Include Payments if needed
-                                     .FirstOrDefaultAsync(c => c.Id == id);
+                var customer = await _dbcontext.Customers
+                                    .Include(c => c.Address)
+                                    .Include(c => c.Rentals)
+                                    .Include(c => c.Payments)
+                                    .FirstOrDefaultAsync(c => c.Id == id);
 
-                if (customer == null)
-                {
-                    throw new KeyNotFoundException($"Customer with ID '{id}' not found.");
-                }
-                return customer;
+                return customer; // Return null if customer is not found
             }
             catch (Exception ex)
             {
                 throw new Exception("Error fetching customer from database.", ex);
             }
         }
+
 
         public async Task<bool> UpdateCustomer(Customer customer)
         {

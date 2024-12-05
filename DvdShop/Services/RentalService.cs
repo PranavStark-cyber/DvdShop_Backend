@@ -1,4 +1,5 @@
-﻿using DvdShop.Entity;
+﻿using DvdShop.DTOs.Requests.Rental;
+using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
 
@@ -10,14 +11,22 @@ namespace DvdShop.Services
       private readonly INotificationRepository _notificationRepository;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPaymentService _paymentService;
+        private readonly IWhatsAppServices _whatsAppServices;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IManagerRepository _managerRepository;
 
-    public RentalService(IRentalRepository rentalRepository, INotificationRepository notificationRepository,
-                         IInventoryRepository inventoryRepository, IPaymentService paymentService)
+        public RentalService(IRentalRepository rentalRepository, INotificationRepository notificationRepository,
+                         IInventoryRepository inventoryRepository, IPaymentService paymentService,IWhatsAppServices whatsAppServices,ICustomerRepository customerRepository,IManagerRepository managerRepository)
     {
         _rentalRepository = rentalRepository;
         _notificationRepository = notificationRepository;
         _inventoryRepository = inventoryRepository;
         _paymentService = paymentService;
+            _whatsAppServices = whatsAppServices;
+            _customerRepository = customerRepository;
+            _managerRepository= managerRepository;
+
+            
     }
 
     public async Task<IEnumerable<Rental>> GetAllRentals()
@@ -59,7 +68,15 @@ namespace DvdShop.Services
 
                 // Decrease the available copies in the inventory
                 await _inventoryRepository.UpdateInventory(rental.DvdId, -1);
-        }
+
+                // Send WhatsApp notification
+                var customerPhoneNumber = rental.Customer.PhoneNumber; // Replace with actual property for customer's phone number
+                if (!string.IsNullOrEmpty(customerPhoneNumber))
+                {
+                    var message = $"Your rental for '{rental.DVD.Title}' has been approved. Enjoy your movie!";
+                    await _whatsAppServices. SendWhatsAppNotification(customerPhoneNumber, message);
+                }
+            }
     }
 
     public async Task CollectRental(Guid id)
@@ -82,25 +99,58 @@ namespace DvdShop.Services
             });
         }
     }
-
-    public async Task RequestRental(Rental rental)
-    {
-        rental.Status = RentalStatus.Request;
-        rental.RequestDate = DateTime.UtcNow;
-        await _rentalRepository.CreateRental(rental);
-
-        await _notificationRepository.AddNotification(new Notification
+        public async Task RequestRental(CreateRentalDto createRentalDto)
         {
-            ReceiverId = rental.CustomerId,
-            Title = "Rental Requested",
-            Message = $"You have requested to rent {rental.DVD.Title}.",
-            ViewStatus = "Unread",
-            Type = "Info",
-            Date = DateTime.UtcNow
-        });
-    }
+            // Fetch the customer to validate
+            var customer = await _customerRepository.GetCustomerById(createRentalDto.CustomerId);
+            if (customer == null)
+            {
+                throw new KeyNotFoundException($"Customer with ID '{createRentalDto.CustomerId}' not found.");
+            }
 
-    public async Task ReturnRental(Guid id)
+            // Fetch the DVD by ID to include in the rental object
+            var dvd = await _managerRepository.GetDvdById(createRentalDto.DvdId);
+            if (dvd == null)
+            {
+                throw new KeyNotFoundException($"DVD with ID '{createRentalDto.DvdId}' not found.");
+            }
+
+            // Proceed with rental creation
+            var rental = new Rental
+            {
+                Id = Guid.NewGuid(),
+                DvdId = createRentalDto.DvdId,
+                CustomerId = createRentalDto.CustomerId,
+                RentalDays = createRentalDto.RentalDays,
+                Status = RentalStatus.Request,
+                RequestDate = DateTime.UtcNow,
+                DVD = dvd // Make sure the DVD is assigned to the rental
+            };
+
+            // Decrease available copies of the DVD
+            await _inventoryRepository.UpdateInventory(createRentalDto.DvdId, -createRentalDto.CopySofDvd);
+
+            // Save rental to repository
+            await _rentalRepository.CreateRental(rental);
+
+            // Add notification for the customer
+            await _notificationRepository.AddNotification(new Notification
+            {
+                ReceiverId = rental.CustomerId,
+                Title = "Rental Requested",
+                Message = $"You have requested to rent {rental.DVD.Title}.",
+                ViewStatus = "Unread",
+                Type = "Info",
+                Date = DateTime.UtcNow
+            });
+        }
+
+
+
+
+
+
+        public async Task ReturnRental(Guid id)
     {
         var rental = await _rentalRepository.GetRentalById(id);
         if (rental != null)

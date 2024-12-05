@@ -136,6 +136,24 @@ namespace DvdShop.Repositorys
         {
             return await _storeContext.DVDs.Include(d => d.Genre).Include(d => d.Director).Include(d=>d.Inventory).FirstOrDefaultAsync(d => d.Id == id);
         }
+        //public async Task<DVD> GetDvdById(Guid id)
+        //{
+        //    // Perform JOIN on the Inventory table
+        //    var dvd = await (from d in _storeContext.DVDs
+        //                     join inv in _storeContext.Inventory on d.Id equals inv.DvdId into inventoryJoin
+        //                     from inv in inventoryJoin.DefaultIfEmpty() // To handle cases where Inventory is null (left join)
+        //                     where d.Id == id
+        //                     select new DVD
+        //                     {
+        //                         Id = d.Id,
+        //                         Title = d.Title,
+        //                         Genre = d.Genre,
+        //                         Director = d.Director,
+        //                         Inventory = inv // Join the inventory, can be null
+        //                     }).FirstOrDefaultAsync();
+
+        //    return dvd;
+        //}
 
         // Update DVD
         public async Task<DVD> UpdateDvd(DVD dvd)
