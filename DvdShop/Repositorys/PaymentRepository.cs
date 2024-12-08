@@ -25,5 +25,13 @@ namespace DvdShop.Repositorys
         {
             return await _paymentcontext.Payments.FirstOrDefaultAsync(p => p.ReferenceId == referenceId);
         }
+
+        public async Task<List<Payment>> GetPaymentsByCustomerId(Guid customerId)
+        {
+            return await _paymentcontext.Payments
+                                 .Where(p => p.CustomerId == customerId)
+                                 .ToListAsync();
+        }
+
     }
 }

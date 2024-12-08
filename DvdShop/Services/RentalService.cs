@@ -1,4 +1,5 @@
 ﻿using DvdShop.DTOs.Requests.Rental;
+using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
@@ -210,9 +211,51 @@ namespace DvdShop.Services
     }
 
 
-        public async Task<List<Rental>> GetRentalsByCustomerId(Guid customerId)
+        public async Task<List<RentalResponse>> GetRentalsByCustomerId(Guid customerId)
         {
-            return (await _rentalRepository.GetRentalsByCustomerId(customerId)).ToList();
+            try
+            {
+   
+                var rentals = await _rentalRepository.GetRentalsByCustomerId(customerId);
+
+                var rentalResponses = rentals.Select(rental => new RentalResponse
+                {
+                    Id = rental.Id,
+                    DvdId = rental.DvdId,
+                    CustomerId = rental.CustomerId,
+                    RentalDays = rental.RentalDays,
+                    Status = rental.Status,
+                    RequestDate = rental.RequestDate,
+                    ApprovedDate = rental.ApprovedDate,
+                    CollectedDate = rental.CollectedDate,
+                    ReturnDate = rental.ReturnDate,
+                    DVD = new DvdResponse
+                    {
+                        Id = rental.DVD.Id,
+                        Title = rental.DVD.Title,
+                        GenreId = rental.DVD.GenreId,
+                        DirectorId = rental.DVD.DirectorId,
+                        ReleaseDate = rental.DVD.ReleaseDate,
+                        Price = rental.DVD.Price,
+                        Description = rental.DVD.Description,
+                        ImageUrl = rental.DVD.ImageUrl,
+                        Genre = rental.DVD.Genre,
+                        Director = rental.DVD.Director,
+                        Reviews = rental.DVD.Reviews,
+                        Inventory = rental.DVD.Inventory
+                    }
+                }).ToList();
+
+                return rentalResponses;
+            }
+            catch (Exception ex)
+            {
+   
+                Console.Error.WriteLine($"Error occurred while fetching rentals: {ex.Message}");
+
+                throw new ApplicationException("An error occurred while retrieving rental data.");
+            }
         }
+
     }
 }

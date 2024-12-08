@@ -6,5 +6,6 @@ namespace DvdShop.Interface.IRepositorys
     {
         Task<Payment> CreatePayment(Payment payment);
         Task<Payment> GetPaymentByReferenceId(string referenceId);
+        Task<List<Payment>> GetPaymentsByCustomerId(Guid customerId);
     }
 }

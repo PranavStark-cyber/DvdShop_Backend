@@ -1,18 +1,12 @@
 ﻿using DvdShop.DTOs.Requests.Rental;
+using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 
 namespace DvdShop.Interface.IRepositorys
 {
     public interface IRentalService
     {
-        //Task<List<Rental>> GetAllRentalsAsync();
-        //Task<Rental?> GetRentalByIdAsync(Guid rentalId);
-        //Task<Rental> CreateRentalAsync(CreateRentalDto createRentalDto);
-        //Task<Rental?> ApproveRentalAsync(Guid rentalId);
-        //Task<Rental?> RejectRentalAsync(Guid rentalId);
-        //Task<Rental?> CollectRentalAsync(Guid rentalId);
-        //Task<Rental?> ReturnRentalAsync(Guid rentalId);
-        //Task<List<Rental>> GetRentalsByCustomerIdAsync(Guid customerId);
+
         Task<IEnumerable<Rental>> GetAllRentals();
         Task<Rental> GetRentalById(Guid id);
         Task ApproveRental(Guid id);
@@ -20,6 +14,6 @@ namespace DvdShop.Interface.IRepositorys
         Task RequestRental(CreateRentalDto createRentalDto);
         Task ReturnRental(Guid id);
         Task RejectRental(Guid id);
-        Task<List<Rental>> GetRentalsByCustomerId(Guid customerId);
+        Task<List<RentalResponse>> GetRentalsByCustomerId(Guid customerId);
     }
 }
