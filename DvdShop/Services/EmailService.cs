@@ -19,33 +19,38 @@ namespace DvdShop.Services
             _smtpPass = configuration["EmailSettings:SmtpPass"];
         }
 
-        public async Task SendEmailAsync(string to, string subject, string body)
+        public async Task SendEmailAsync(string to, string subject, string body, bool isHtml = false)
         {
             var fromAddress = new MailAddress(_smtpUser, "PranavStark");
             var toAddress = new MailAddress(to);
 
-            using (var smtpClient = new SmtpClient(_smtpHost, _smtpPort))
+            using var smtpClient = new SmtpClient(_smtpHost, _smtpPort)
             {
-                smtpClient.Credentials = new NetworkCredential(_smtpUser, _smtpPass);
-                smtpClient.EnableSsl = true;
+                Credentials = new NetworkCredential(_smtpUser, _smtpPass),
+                EnableSsl = true
+            };
 
-                using (var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = subject,
-                    Body = body
-                })
-                {
-                    try
-                    {
-                        await smtpClient.SendMailAsync(message);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("Failed to send email: " + ex.Message);
-                    }
-                }
+            using var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = isHtml // This flag enables HTML formatting for the email body
+            };
+
+            try
+            {
+                await smtpClient.SendMailAsync(message);
+            }
+            catch (SmtpException smtpEx)
+            {
+                throw new Exception("SMTP error occurred while sending email: " + smtpEx.Message, smtpEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while sending email: " + ex.Message, ex);
             }
         }
+
     }
 
 }

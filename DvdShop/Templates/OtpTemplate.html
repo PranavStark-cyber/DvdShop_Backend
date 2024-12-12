@@ -1,0 +1,49 @@
+﻿<!-- OtpTemplate.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .otp-container {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 400px;
+            background-color: #f9f9f9;
+        }
+
+        .otp {
+            font-size: 24px;
+            color: #6803ff;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #2200ff;
+            border-radius: 8px;
+            display: inline-block;
+            text-align: center;
+            background-color: #f9f9f9;
+            /* Optional for a subtle background */
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            /* Optional for a shadow effect */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-container">
+        <h2>Hello, {{FirstName}}!</h2>
+        <p>Your email verification OTP is:</p>
+        <div class="otp">{{OTP}}</div>
+        <p>Please verify your email to complete your registration.</p>
+        <p>Thank you,</p>
+        <p><strong>DVD Cores</strong></p>
+    </div>
+</body>
+
+</html>

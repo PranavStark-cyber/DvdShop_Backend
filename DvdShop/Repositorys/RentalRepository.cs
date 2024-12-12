@@ -51,7 +51,7 @@ namespace DvdShop.Repositorys
         {
             return await _rentalcontext.Rentals
                                  .Where(r => r.CustomerId == customerId)
-                                 .Include(r => r.DVD)
+                                 .Include(r => r.DVD).Include(r=>r.Customer)
                                  .ToListAsync();
         }
 

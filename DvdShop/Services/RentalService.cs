@@ -215,9 +215,13 @@ namespace DvdShop.Services
         {
             try
             {
-   
+                // Fetch rentals by customer ID
                 var rentals = await _rentalRepository.GetRentalsByCustomerId(customerId);
 
+                // Fetch customer details (assuming you have a service/repository for that)
+                var customer = await _customerRepository.GetCustomerById(customerId);
+
+                // Map rentals to RentalResponse
                 var rentalResponses = rentals.Select(rental => new RentalResponse
                 {
                     Id = rental.Id,
@@ -243,6 +247,15 @@ namespace DvdShop.Services
                         Director = rental.DVD.Director,
                         Reviews = rental.DVD.Reviews,
                         Inventory = rental.DVD.Inventory
+                    },
+                    Customer = new CustomerRentalDTO  
+                    {
+                        Id = customer.Id,
+                        Nic = customer.Nic,
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        PhoneNumber = customer.PhoneNumber,
+                        JoinDate = customer.JoinDate
                     }
                 }).ToList();
 
@@ -250,12 +263,11 @@ namespace DvdShop.Services
             }
             catch (Exception ex)
             {
-   
                 Console.Error.WriteLine($"Error occurred while fetching rentals: {ex.Message}");
-
                 throw new ApplicationException("An error occurred while retrieving rental data.");
             }
         }
+
 
     }
 }

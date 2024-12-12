@@ -14,5 +14,6 @@ namespace DvdShop.DTOs.Responses.Customers
         public DateTime? CollectedDate { get; set; }
         public DateTime? ReturnDate { get; set; }
         public DvdResponse DVD { get; set; }
+        public CustomerRentalDTO Customer { get; set; }
     }
 }

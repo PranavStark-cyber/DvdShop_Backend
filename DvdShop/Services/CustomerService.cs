@@ -29,32 +29,42 @@ namespace DvdShop.Services
             try
             {
                 var customer = await _customerRepository.GetCustomerById(customerId);
-                var user = await _customerRepository.GetUserById(customerId);
-
-                var address = new AddressResponse
+                if (customer == null)
                 {
-                    Id=customer.Address.Id,
-                    Street = customer.Address.Street,
-                    City = customer.Address.City,
-                    Country = customer.Address.Country,
-                };
+                    throw new KeyNotFoundException($"Customer with ID {customerId} was not found.");
+                }
+
+                var user = await _customerRepository.GetUserById(customerId);
+                if (user == null)
+                {
+                    throw new KeyNotFoundException($"User with ID {customerId} was not found.");
+                }
+
+                var address = customer.Address != null
+                    ? new AddressResponse
+                    {
+                        Id = customer.Address.Id,
+                        Street = customer.Address.Street,
+                        City = customer.Address.City,
+                        Country = customer.Address.Country,
+                    }
+                    : null;
 
                 var customerdata = new CustomerResponseDTO
                 {
                     Id = customerId,
-                    Email=user.Email,
-                    Nic=customer.Nic,
-                    FirstName=customer.FirstName,
-                    LastName=customer.LastName,
-                    PhoneNumber=customer.PhoneNumber,
-                    JoinDate=customer.JoinDate,
-                    Payments=customer.Payments,
-                    Address=address,
-                    Rentals=customer.Rentals,
-                    Reservations=customer.Reservations,
-                    Reviews=customer.Reviews,
-                    Notifications=customer.Notifications,
-
+                    Email = user.Email,
+                    Nic = customer.Nic,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    PhoneNumber = customer.PhoneNumber,
+                    JoinDate = customer.JoinDate,
+                    Payments = customer.Payments,
+                    Address = address,
+                    Rentals = customer.Rentals,
+                    Reservations = customer.Reservations,
+                    Reviews = customer.Reviews,
+                    Notifications = customer.Notifications,
                 };
                 return customerdata;
             }
@@ -67,6 +77,7 @@ namespace DvdShop.Services
                 throw new Exception("An error occurred while fetching the customer.", ex);
             }
         }
+    
 
 
 

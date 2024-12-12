@@ -123,11 +123,20 @@ namespace DvdShop.Services
             var otp = GenerateOTP();
             await _userRepository.AddVerificationOTPAsync(registeredUser.Email, otp);
 
-            var body = $"Dear {registerDTO.FirstName},\n\nYour email verification OTP is {otp}.\n\nBest Regards,\nYourAppName";
-            await _emailService.SendEmailAsync(registeredUser.Email, "Email Verification", body);
+            // Load the HTML template
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "OtpTemplate.html");
+            string emailBody = await File.ReadAllTextAsync(templatePath);
+
+            // Replace placeholders
+            emailBody = emailBody.Replace("{{FirstName}}", registerDTO.FirstName)
+                                 .Replace("{{OTP}}", otp);
+
+            // Send email with the HTML body
+            await _emailService.SendEmailAsync(registeredUser.Email, "Email Verification", emailBody, isHtml: true);
 
             return "Registration successful. Please verify your email.";
         }
+
 
         public async Task<string> RegisterManagerAsync(RegisterStaff registerDTO)
         {
