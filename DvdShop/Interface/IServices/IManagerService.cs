@@ -1,4 +1,5 @@
 ﻿using DvdShop.DTOs.Requests.Manager;
+using DvdShop.DTOs.Responses.Customers.Manager;
 using DvdShop.Entity;
 
 namespace DvdShop.Interface.IServices
@@ -16,5 +17,6 @@ namespace DvdShop.Interface.IServices
         Task<List<Inventory>> GetWeeklyInventoryReport();
         Task<List<Inventory>> GetMonthlyInventoryReport();
         Task SendInventoryReportNotification(string type);
+        Task<ManagerResponseDTO?> GetStaffById(Guid managerId);
     }
 }

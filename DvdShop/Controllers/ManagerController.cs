@@ -1,6 +1,7 @@
 ﻿using DvdShop.DTOs.Requests.Manager;
 using DvdShop.Entity;
 using DvdShop.Interface.IServices;
+using DvdShop.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,7 @@ namespace DvdShop.Controllers
     public class ManagerController : ControllerBase
     {
         private readonly IManagerService _managerService;
-    public ManagerController(IManagerService managerService)
+        public ManagerController(IManagerService managerService)
         {
             _managerService = managerService;
         }
@@ -19,7 +20,7 @@ namespace DvdShop.Controllers
 
 
         [HttpPost("AddDvd")]
-        public async Task<IActionResult> AddDvd( CreateDvdDto createDvdDto)
+        public async Task<IActionResult> AddDvd(CreateDvdDto createDvdDto)
         {
 
             if (string.IsNullOrWhiteSpace(createDvdDto.ImageUrl))
@@ -163,6 +164,29 @@ namespace DvdShop.Controllers
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetStaffById(Guid id)
+        {
+            try
+            {
+                var staff = await _managerService.GetStaffById(id);
+                if (staff == null)
+                {
+                    return NotFound($"Staff with ID '{id}' not found.");
+                }
+
+                return Ok(staff);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

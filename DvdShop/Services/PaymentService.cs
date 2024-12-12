@@ -6,16 +6,20 @@ using DvdShop.Repositorys;
 
 namespace DvdShop.Services
 {
-    public class PaymentService: IPaymentService
+    public class PaymentService : IPaymentService
     {
 
         private readonly IPaymentRepository _paymentRepository;
         private readonly IRentalRepository _personalRepository;
+        private readonly IManagerRepository _managerRepository;
+        private readonly ILogger<RentalService> _logger;
 
-        public PaymentService(IPaymentRepository paymentRepository, IRentalRepository personalRepository)
+        public PaymentService(IPaymentRepository paymentRepository, IRentalRepository personalRepository, IManagerRepository managerRepository, ILogger<RentalService> logger)
         {
             _paymentRepository = paymentRepository;
             _personalRepository = personalRepository;
+            _managerRepository = managerRepository;
+            _logger = logger;
         }
 
         //public async Task<Payment> ProcessPayment(Rental rental)
@@ -33,48 +37,66 @@ namespace DvdShop.Services
         //    return await _paymentRepository.CreatePayment(payment);
         //}
 
-
         public async Task<Payment> ProcessPayment(Rental rental)
-{
- 
-    int rentalDays = (rental.ReturnDate.Value - rental.ApprovedDate.Value).Days;
+        {
+            if (rental.ReturnDate.HasValue && rental.ApprovedDate.HasValue)
+            {
+                // Calculate rental days (ensure it is at least 1 day if rentalDays is 0)
+                int rentalDays = (rental.ReturnDate.Value - rental.ApprovedDate.Value).Days;
+                if (rentalDays <= 0) // If rental days is 0 or negative, treat as 1 day
+                {
+                    rentalDays = 1;
+                }
 
- 
-    decimal overdueFeeRate = 10.00m;
-    decimal amount = 0m;
+                decimal overdueFeeRate = 10.00m;
+                decimal amount = 0;
 
+                // Ensure that rental.DVD.Price is not null and valid
+                if (rental.DVD?.Price > 0)
+                {
+                    if (rentalDays <= rental.RentalDays)
+                    {
+                        // Calculate amount for the rental days (no overdue)
+                        amount = rentalDays * rental.DVD.Price;
+                    }
+                    else
+                    {
+                        // Calculate normal rental amount for approved days
+                        amount = rental.RentalDays * rental.DVD.Price;
 
-    if (rentalDays <= rental.RentalDays)
-    {
-        amount = rentalDays * rental.DVD.Price;
-    }
-    else
-    {
-        // Calculate normal rental amount for approved days
-        amount = rental.RentalDays * rental.DVD.Price;
+                        // Calculate overdue fee
+                        int overdueDays = rentalDays - rental.RentalDays;
+                        decimal overdueFee = overdueDays * overdueFeeRate;
+                        amount += overdueFee;
+                    }
 
+                    var payment = new Payment
+                    {
+                        ReferenceId = rental.CustomerId,
+                        Type = "Full payment",
+                        Amount = amount
+                    };
 
-        int overdueDays = rentalDays - rental.RentalDays;
+                    // Log the calculated amount for debugging purposes
+                    _logger.LogInformation($"Calculated payment amount: {amount} for rental ID: {rental.Id}");
 
-        decimal overdueFee = overdueDays * overdueFeeRate;
+                    // Create and return the payment via repository
+                    return await _paymentRepository.CreatePayment(payment);
+                }
+                else
+                {
+                    _logger.LogError($"Invalid DVD price for rental ID: {rental.Id}");
+                }
+            }
+            else
+            {
+                // Log if any required dates are missing
+                _logger.LogError($"Missing dates for rental ID: {rental.Id}. ApprovedDate: {rental.ApprovedDate}, ReturnDate: {rental.ReturnDate}");
+            }
 
-        amount += overdueFee;
-    }
-
-    var payment = new Payment
-    {
-        ReferenceId = Guid.NewGuid().ToString(),
-        Amount = amount,
-        CustomerId = rental.CustomerId
-    };
-
-    // Create and return the payment via repository
-    return await _paymentRepository.CreatePayment(payment);
-}
-
-
-
-
+            // Return null if payment could not be processed
+            return null;
+        }
 
 
 

@@ -1,17 +1,22 @@
 ﻿using DvdShop.DTOs.Requests.Manager;
+using DvdShop.DTOs.Responses.Customers;
+using DvdShop.DTOs.Responses.Customers.Manager;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
+using DvdShop.Repositorys;
 
 namespace DvdShop.Services
 {
     public class ManagerService:IManagerService
     {
         private readonly IManagerRepository _managerRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public ManagerService(IManagerRepository managerRepository)
+        public ManagerService(IManagerRepository managerRepository, ICustomerRepository customerRepository)
         {
             _managerRepository = managerRepository;
+            _customerRepository = customerRepository;
         }
 
 
@@ -216,6 +221,45 @@ namespace DvdShop.Services
                 throw new Exception("An error occurred while sending the inventory report notification.", ex);
             }
         }
+
+        public async Task<ManagerResponseDTO?> GetStaffById(Guid managerId)
+        {
+            try
+            {
+                var manager = await _managerRepository.GetStaffById(managerId);
+                if (manager == null)
+                {
+                    throw new KeyNotFoundException($"staff with ID {managerId} was not found.");
+                }
+
+                var user = await _customerRepository.GetUserById(managerId);
+                if (user == null)
+                {
+                    throw new KeyNotFoundException($"User with ID {managerId} was not found.");
+                }
+
+                var managerdata = new ManagerResponseDTO
+                {
+                    Id = managerId,
+                    Email = user.Email,
+                    NIC = manager.NIC,
+                    FirstName = manager.FirstName,
+                    LastName = manager.LastName,
+
+                };
+                return managerdata;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching the staff.", ex);
+            }
+        }
+
+
     }
 
 }

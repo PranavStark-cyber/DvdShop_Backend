@@ -40,32 +40,30 @@ namespace DvdShop.Services
         return await _rentalRepository.GetRentalById(id);
     }
 
-    public async Task ApproveRental(Guid id)
-    {
-        var rental = await _rentalRepository.GetRentalById(id);
-        if (rental != null)
+        public async Task ApproveRental(Guid id)
         {
+            var rental = await _rentalRepository.GetRentalById(id);
+            if (rental != null)
+            {
                 // Add notification to customer
                 var notification = new Notification
                 {
                     ReceiverId = rental.CustomerId,
                     Title = "Rental Approved",
                     Message = $"Your rental for {rental.DVD.Title} has been approved.",
-                    ViewStatus = "Unread",  
+                    ViewStatus = "Unread",
                     Type = "Info",
                     Date = DateTime.UtcNow
                 };
-
 
                 await _notificationRepository.AddNotification(notification);
 
                 var customerNotification = await _notificationRepository.GetNotificationById(notification.Id);
                 if (customerNotification != null)
                 {
-                    customerNotification.ViewStatus = "Read";  
-                    await _notificationRepository.UpdateNotification(customerNotification); 
+                    customerNotification.ViewStatus = "Read";
+                    await _notificationRepository.UpdateNotification(customerNotification);
                 }
-
 
                 // Decrease the available copies in the inventory
                 await _inventoryRepository.UpdateInventory(rental.DvdId, -1);
@@ -75,12 +73,19 @@ namespace DvdShop.Services
                 if (!string.IsNullOrEmpty(customerPhoneNumber))
                 {
                     var message = $"Your rental for '{rental.DVD.Title}' has been approved. Enjoy your movie!";
-                    await _whatsAppServices. SendWhatsAppNotification(customerPhoneNumber, message);
+                    await _whatsAppServices.SendWhatsAppNotification(customerPhoneNumber, message);
                 }
-            }
-    }
 
-    public async Task CollectRental(Guid id)
+                // Update rental status to Approved (Enum value)
+                rental.ApprovedDate = DateTime.UtcNow;
+                rental.Status = RentalStatus.Approved;  // Correctly assign the enum value
+                await _rentalRepository.UpdateRental(rental);  // Call UpdateRental method to update the rental in the database
+            }
+        }
+
+
+
+        public async Task CollectRental(Guid id)
     {
         var rental = await _rentalRepository.GetRentalById(id);
         if (rental != null)
@@ -99,7 +104,11 @@ namespace DvdShop.Services
                 Date = DateTime.UtcNow
             });
         }
-    }
+            // Update rental status to Approved (Enum value)
+            rental.CollectedDate = DateTime.UtcNow;
+            rental.Status = RentalStatus.Collected;  // Correctly assign the enum value
+            await _rentalRepository.UpdateRental(rental);  // Call UpdateRental method to update the rental in the database
+        }
         public async Task RequestRental(CreateRentalDto createRentalDto)
         {
             // Fetch the customer to validate
@@ -175,7 +184,11 @@ namespace DvdShop.Services
 
             // Update inventory to add back available copies
             await _inventoryRepository.UpdateInventory(rental.DvdId, 1);
-        }
+                // Update rental status to Approved (Enum value)
+                rental.ReturnDate= DateTime.UtcNow;
+                rental.Status = RentalStatus.Returned;  // Correctly assign the enum value
+                await _rentalRepository.UpdateRental(rental);  // Call UpdateRental method to update the rental in the database
+            }
     }
 
     public async Task RejectRental(Guid id)
@@ -208,7 +221,12 @@ namespace DvdShop.Services
                     await _notificationRepository.UpdateNotification(customerNotification);  
                 }
             }
-    }
+
+            // Update rental status to Approved (Enum value)
+            rental.RequestDate = DateTime.UtcNow;
+            rental.Status = RentalStatus.Rejected;  // Correctly assign the enum value
+            await _rentalRepository.UpdateRental(rental);  // Call UpdateRental method to update the rental in the database
+        }
 
 
         public async Task<List<RentalResponse>> GetRentalsByCustomerId(Guid customerId)

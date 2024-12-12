@@ -259,7 +259,7 @@ namespace DvdShop.Services
             }
             else
             {
-                if (roledata.Name == "Admin" || roledata.Name == "Staff")
+                if (roledata.Name == "Manager" || roledata.Name == "Staff")
                 {
                     var admindata = await _managerRepository.GetStaffById(user.Id);
                     var tokenRequest = new TokenRequestDTO

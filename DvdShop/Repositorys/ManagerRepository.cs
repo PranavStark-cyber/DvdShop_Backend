@@ -16,19 +16,28 @@ namespace DvdShop.Repositorys
 
         public async Task<Staff> GetStaffById(Guid StaffId)
         {
-            var staff = await _storeContext.Staffs
+            try
+            {
+                var staff = await _storeContext.Staffs
               .FirstOrDefaultAsync(c => c.Id == StaffId);
 
 
-            if (staff == null)
+                if (staff == null)
+                {
+                    return null;
+                }
+                return staff;
+
+            }
+            catch (Exception ex)
             {
-                return null;
+                throw new Exception("Error fetching customer from database.", ex);
             }
 
 
 
-            return staff;
         }
+       
 
         public async Task<DVD> AddDvd(DVD dvd)
         {
