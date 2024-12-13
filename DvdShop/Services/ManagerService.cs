@@ -89,6 +89,8 @@ namespace DvdShop.Services
             }
 
             dvd.ImageUrl = updateDvdDto.ImageUrl ?? dvd.ImageUrl;
+            dvd.BackgroundImageurl = updateDvdDto.BackgroundImageurl ?? dvd.BackgroundImageurl;
+            dvd.Trailers = updateDvdDto.Trailers ?? dvd.Trailers;
 
             var genre = await _managerRepository.GetOrCreateGenre(updateDvdDto.GenreId, updateDvdDto.GenreName);
             dvd.GenreId = genre.Id;
