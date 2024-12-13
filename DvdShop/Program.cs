@@ -44,6 +44,10 @@ namespace DvdShop
             builder.Services.AddScoped<IRentalRepository, RentalRepository>();
             builder.Services.AddScoped<IRentalService, RentalService>();
             builder.Services.AddScoped<IWhatsAppServices, WhatsAppServices>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IAddWatchlistRepository, AddWatchlistRepository>();
+            builder.Services.AddScoped<IAddWatchlistService, AddWatchlistService>();
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);

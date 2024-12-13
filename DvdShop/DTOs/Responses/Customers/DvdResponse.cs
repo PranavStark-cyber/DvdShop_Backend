@@ -11,6 +11,8 @@ namespace DvdShop.DTOs.Responses.Customers
         public DateTime ReleaseDate { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
+        public string BackgroundImageurl { get; set; }
+        public string Trailers { get; set; }
         public string ImageUrl { get; set; }
         public Genre Genre { get; set; }
         public Director Director { get; set; }

@@ -4,6 +4,7 @@ using DvdShop.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DvdShop.Migrations
 {
     [DbContext(typeof(DvdStoreContext))]
-    partial class DvdStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241212222023_init8")]
+    partial class init8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,27 +24,6 @@ namespace DvdShop.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DvdShop.Entity.AddWatchlist", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DVDId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DVDId");
-
-                    b.ToTable("AddWatchlists");
-                });
 
             modelBuilder.Entity("DvdShop.Entity.Address", b =>
                 {
@@ -484,25 +466,6 @@ namespace DvdShop.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
-                });
-
-            modelBuilder.Entity("DvdShop.Entity.AddWatchlist", b =>
-                {
-                    b.HasOne("DvdShop.Entity.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DvdShop.Entity.DVD", "DVD")
-                        .WithMany()
-                        .HasForeignKey("DVDId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("DVD");
                 });
 
             modelBuilder.Entity("DvdShop.Entity.Address", b =>

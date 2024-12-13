@@ -18,6 +18,8 @@ namespace DvdShop.DTOs.Requests.Manager
         public decimal Price { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public string BackgroundImageurl { get; set; }
+        public string Trailers { get; set; }
         public int TotalCopies { get; set; }
     }
 
