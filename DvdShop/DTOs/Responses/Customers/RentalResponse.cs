@@ -8,6 +8,9 @@ namespace DvdShop.DTOs.Responses.Customers
         public Guid DvdId { get; set; }
         public Guid CustomerId { get; set; }
         public int RentalDays { get; set; }
+        public int Copies { get; set; }
+        public decimal TotalAmount { get; set; }  // Updated to decimal
+        public decimal OverdueAmount { get; set; }  // Added for overdue fee
         public RentalStatus Status { get; set; } // Use the enum here
         public DateTime RequestDate { get; set; }
         public DateTime? ApprovedDate { get; set; }

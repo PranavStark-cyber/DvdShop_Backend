@@ -1,4 +1,5 @@
-﻿using DvdShop.Entity;
+﻿using DvdShop.DTOs.Requests;
+using DvdShop.Entity;
 using DvdShop.Interface.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,23 @@ namespace DvdShop.Controllers
             _reviewService = reviewService;
         }
 
-        // POST: api/review
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] Review review)
+        public async Task<IActionResult> CreateReview([FromBody] ReviewDTO reviewDTO)
         {
-            if (review == null)
+            if (reviewDTO == null)
             {
-                return BadRequest("Review cannot be null.");
+                return BadRequest("Review data is required.");
             }
 
-            var addedReview = await _reviewService.AddReviewAsync(review);
-            return CreatedAtAction(nameof(GetReviewById), new { id = addedReview.Id }, addedReview);
+            try
+            {
+                var createdReview = await _reviewService.CreateReviewAsync(reviewDTO);
+                return CreatedAtAction(nameof(CreateReview), new { id = createdReview.CustomerId }, createdReview);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message); // Review already exists
+            }
         }
 
         // GET: api/review

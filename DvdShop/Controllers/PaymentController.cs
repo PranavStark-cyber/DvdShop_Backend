@@ -30,6 +30,13 @@ namespace DvdShop.Controllers
             }
         }
 
+        // Endpoint to get total earnings for the company
+        [HttpGet("total-earnings")]
+        public ActionResult<decimal> GetTotalEarnings()
+        {
+            var totalEarnings = _paymentService.GetTotalEarnings();
+            return Ok(totalEarnings);
+        }
         // API for Overdue Amount
         [HttpGet("overdue/{customerId}")]
         public async Task<IActionResult> GetOverdueAmountByCustomerId(Guid customerId)

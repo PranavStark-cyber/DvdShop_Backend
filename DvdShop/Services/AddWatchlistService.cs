@@ -1,4 +1,5 @@
-﻿using DvdShop.Entity;
+﻿using DvdShop.DTOs.Requests;
+using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using DvdShop.Interface.IServices;
 
@@ -13,9 +14,19 @@ namespace DvdShop.Services
             _watchlistRepository = watchlistRepository;
         }
 
-        public async Task<AddWatchlist> AddToWatchlistAsync(AddWatchlist watchlist)
+        public async Task<AddWatchlist> AddToWatchlistAsync(AddwatchlistDTO watchlist)
         {
-            return await _watchlistRepository.AddToWatchlistAsync(watchlist);
+
+            var addwatchlist = new AddWatchlist
+            {
+                Id= Guid.NewGuid(),
+                CustomerId = watchlist.CustomerId,
+                DVDId = watchlist.DVDId,
+
+            };
+
+
+            return await _watchlistRepository.AddToWatchlistAsync(addwatchlist);
         }
 
         public async Task<IEnumerable<AddWatchlist>> GetWatchlistByCustomerIdAsync(Guid customerId)

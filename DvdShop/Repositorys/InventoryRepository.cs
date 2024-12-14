@@ -1,4 +1,5 @@
 ﻿using DvdShop.Database;
+using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,12 @@ namespace DvdShop.Repositorys
                 inventory.AvailableCopies += quantity; // Decrease by quantity for rentals
                 await _inventorycontext.SaveChangesAsync();
             }
+        }
+        public async Task<IEnumerable<Inventory>> GetAllInventoriesAsync()
+        {
+            return await _inventorycontext.Inventories
+                .Include(i => i.Dvd)  // Include related DVD data
+                .ToListAsync();
         }
     }
 }

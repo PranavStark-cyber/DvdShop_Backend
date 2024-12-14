@@ -21,6 +21,12 @@ namespace DvdShop.Repositorys
             return payment;
         }
 
+        public decimal GetTotalEarnings()
+        {
+            // Sum the Amount for all payments in the database
+            var totalEarnings = _paymentcontext.Payments.Sum(p => p.Amount);
+            return totalEarnings;
+        }
         public async Task<Payment> GetPaymentByReferenceId(Guid Id)
         {
             return await _paymentcontext.Payments.FirstOrDefaultAsync(p => p.Id == Id);

@@ -1,4 +1,5 @@
-﻿using DvdShop.Entity;
+﻿using DvdShop.DTOs.Requests;
+using DvdShop.Entity;
 using DvdShop.Interface.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace DvdShop.Controllers
 
         // POST: api/AddWatchlist
         [HttpPost]
-        public async Task<IActionResult> AddToWatchlist( AddWatchlist watchlist)
+        public async Task<IActionResult> AddToWatchlist(AddwatchlistDTO watchlist)
         {
             if (watchlist == null)
             {

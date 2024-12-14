@@ -6,6 +6,7 @@
         public Guid DvdId { get; set; }
         public Guid CustomerId { get; set; }
         public int RentalDays { get; set; }
+        public int Copies { get; set; }
         public RentalStatus Status { get; set; } // Use the enum here
         public DateTime RequestDate { get; set; }
         public DateTime? ApprovedDate { get; set; }

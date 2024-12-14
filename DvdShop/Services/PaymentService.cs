@@ -98,9 +98,11 @@ namespace DvdShop.Services
             return null;
         }
 
-
-
-
+        // Calculate total earnings for the company
+        public decimal GetTotalEarnings()
+        {
+            return _paymentRepository.GetTotalEarnings();
+        }
 
         public async Task<OverdueAmountResponse> GetOverdueAmountByCustomerId(Guid customerId)
         {

@@ -37,6 +37,7 @@ namespace DvdShop
             builder.Services.AddScoped<IManagerService, ManagerService>();
             builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
             builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+            builder.Services.AddScoped<IInventoryService, InventoryService>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
@@ -48,6 +49,8 @@ namespace DvdShop
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IAddWatchlistRepository, AddWatchlistRepository>();
             builder.Services.AddScoped<IAddWatchlistService, AddWatchlistService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
+
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);

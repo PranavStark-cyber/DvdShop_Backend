@@ -8,5 +8,6 @@ namespace DvdShop.Interface.IServices
         Task<Payment> ProcessPayment(Rental rental);
         Task<TotalAmountResponse> GetTotalAmountByCustomerId(Guid customerId);
         Task<OverdueAmountResponse> GetOverdueAmountByCustomerId(Guid customerId);
+        decimal GetTotalEarnings();
     }
 }

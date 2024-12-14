@@ -16,9 +16,15 @@ namespace DvdShop.Repositorys
 
         public async Task<Review> AddReviewAsync(Review review)
         {
-            await _context.Reviews.AddAsync(review);
+            _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
             return review;
+        }
+
+        public async Task<Review> GetReviewByCustomerAndDvdAsync(Guid customerId, Guid dvdId)
+        {
+            return await _context.Reviews
+                                 .FirstOrDefaultAsync(r => r.CustomerId == customerId && r.DvdId == dvdId);
         }
 
         public async Task<IEnumerable<Review>> GetReviewsByCustomerIdAsync(Guid customerId)
