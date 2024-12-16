@@ -384,14 +384,13 @@ namespace DvdShop.Services
                         CustomerId = rental.CustomerId,
                         RentalDays = rental.RentalDays,
                         Copies = rental.Copies,
-                        TotalAmount = totalAmount,  // Include the calculated total amount
+                        TotalAmount = rentalPrice,  // Include the calculated total amount
                         OverdueAmount = overdueAmount,  // Include the calculated overdue amount
                         Status = rental.Status,
                         RequestDate = rental.RequestDate,
                         ApprovedDate = rental.ApprovedDate,
                         CollectedDate = rental.CollectedDate,
-                        ReturnDate = rental.ReturnDate,
-                        Price = rentalPrice,  // Assign the calculated rental price here
+                        ReturnDate = rental.ReturnDate, // Assign the calculated rental price here
                         DVD = new DvdResponse
                         {
                             Id = rental.DVD.Id,
