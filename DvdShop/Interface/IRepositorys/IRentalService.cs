@@ -1,4 +1,5 @@
-﻿using DvdShop.DTOs.Requests.Rental;
+﻿using DvdShop.DTOs;
+using DvdShop.DTOs.Requests.Rental;
 using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 
@@ -7,7 +8,7 @@ namespace DvdShop.Interface.IRepositorys
     public interface IRentalService
     {
 
-        Task<IEnumerable<Rental>> GetAllRentals();
+        Task<List<RentalViewModel>> GetAllRentals();
         Task<Rental> GetRentalById(Guid id);
         Task ApproveRental(Guid id);
         Task CollectRental(Guid id);

@@ -78,7 +78,7 @@ namespace DvdShop.Services
             // Update DVD details
             dvd.Title = updateDvdDto.Title ?? dvd.Title;
             dvd.Description = updateDvdDto.Description ?? dvd.Description;
-            if (updateDvdDto.Price != 0) 
+            if (updateDvdDto.Price != 0)
             {
                 dvd.Price = updateDvdDto.Price;
             }
@@ -100,12 +100,28 @@ namespace DvdShop.Services
 
             var updatedDvd = await _managerRepository.UpdateDvd(dvd);
 
+            // Check if inventory exists
             var inventory = await _managerRepository.GetInventoryByDvdId(dvd.Id);
             if (inventory != null)
             {
+                // Update existing inventory
                 inventory.TotalCopies = updateDvdDto.TotalCopies;
                 inventory.AvailableCopies = updateDvdDto.TotalCopies;
                 await _managerRepository.UpdateInventory(inventory);
+            }
+            else
+            {
+                // Create new inventory if it doesn't exist
+                var newInventory = new Inventory
+                {
+                    DvdId = dvd.Id,
+                    TotalCopies = updateDvdDto.TotalCopies,
+                    AvailableCopies = updateDvdDto.TotalCopies,
+                    LastRestock = DateTime.UtcNow // Set the current date and time for the last restock
+                };
+
+                // Add the new inventory to the database
+                await _managerRepository.AddInventory(newInventory);
             }
 
             return updatedDvd;

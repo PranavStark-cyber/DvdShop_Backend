@@ -77,8 +77,7 @@ namespace DvdShop.Services
                         Amount = amount
                     };
 
-                    // Log the calculated amount for debugging purposes
-                    _logger.LogInformation($"Calculated payment amount: {amount} for rental ID: {rental.Id}");
+
 
                     // Create and return the payment via repository
                     return await _paymentRepository.CreatePayment(payment);

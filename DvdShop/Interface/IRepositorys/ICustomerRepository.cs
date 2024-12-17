@@ -7,7 +7,7 @@ namespace DvdShop.Interface.IRepositorys
     {
         Task<ICollection<Customer>> GetCustomers( );
         Task<bool> UpdateCustomer(Customer customer);
-        Task<Customer?> GetCustomerById(Guid id);
+        Task<Customer> GetCustomerById(Guid id);
         Task<bool> DeleteCustomer(Guid customerId);
         Task<bool> DVDExistsAsync(Guid dvdId);
         Task<bool> CustomerExistsAsync(Guid customerId);

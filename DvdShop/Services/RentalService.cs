@@ -1,4 +1,5 @@
-﻿using DvdShop.DTOs.Requests.Rental;
+﻿using DvdShop.DTOs;
+using DvdShop.DTOs.Requests.Rental;
 using DvdShop.DTOs.Responses.Customers;
 using DvdShop.Entity;
 using DvdShop.Interface.IRepositorys;
@@ -15,9 +16,10 @@ namespace DvdShop.Services
         private readonly IWhatsAppServices _whatsAppServices;
         private readonly ICustomerRepository _customerRepository;
         private readonly IManagerRepository _managerRepository;
+        private readonly ILogger<RentalService> _logger;
         private readonly IEmailService _emailService;
 
-        public RentalService(IRentalRepository rentalRepository, INotificationRepository notificationRepository,
+        public RentalService(IRentalRepository rentalRepository, INotificationRepository notificationRepository, ILogger<RentalService> logger,
                          IInventoryRepository inventoryRepository, IPaymentService paymentService, IWhatsAppServices whatsAppServices, ICustomerRepository customerRepository, IManagerRepository managerRepository, IEmailService emailService)
         {
             _rentalRepository = rentalRepository;
@@ -28,14 +30,84 @@ namespace DvdShop.Services
             _customerRepository = customerRepository;
             _managerRepository = managerRepository;
             _emailService = emailService;
+            _logger = logger;
 
 
         }
 
-        public async Task<IEnumerable<Rental>> GetAllRentals()
+        public async Task<List<RentalViewModel>> GetAllRentals()
         {
-            return await _rentalRepository.GetAllRentals();
+            try
+            {
+                // Fetch all rentals from the repository
+                var rentals = await _rentalRepository.GetAllRentals();
+
+
+                // Map rentals to RentalViewModel
+                var rentalViewModels = rentals.Select(rental =>
+                {
+                    var user = _customerRepository.GetUserById(rental.CustomerId);
+
+                    // Calculate the rental price (Price * Copies * RentalDays)
+                    decimal rentalPrice = rental.DVD.Price * rental.Copies * rental.RentalDays;
+
+                    
+
+
+                    // Create RentalViewModel with the necessary details
+                    var rentalViewModel = new RentalViewModel
+                    {
+                        RentalId = rental.Id,
+                        RentalDays = rental.RentalDays,
+                        Copies = rental.Copies,
+                        RentalPrice = rentalPrice, // Rental price based on DVD price, rental days, and copies
+                        Status = rental.Status,
+                        RequestDate = rental.RequestDate,
+                        ApprovedDate = rental.ApprovedDate,
+                        CollectedDate = rental.CollectedDate,
+                        ReturnDate = rental.ReturnDate,
+                        DVD = new DvdResponse
+                        {
+                            Id = rental.DVD.Id,
+                            Title = rental.DVD.Title,
+                            GenreId = rental.DVD.GenreId,
+                            DirectorId = rental.DVD.DirectorId,
+                            ReleaseDate = rental.DVD.ReleaseDate,
+                            Price = rental.DVD.Price,
+                            Description = rental.DVD.Description,
+                            ImageUrl = rental.DVD.ImageUrl,
+                            Genre = rental.DVD.Genre,
+                            Director = rental.DVD.Director,
+                            Reviews = rental.DVD.Reviews,
+                            Inventory = rental.DVD.Inventory
+                        },
+                        Customer = new CustomerRentalDTO
+                        {
+                            Id= rental.CustomerId,
+                            FirstName=rental.Customer.FirstName,
+                            LastName = rental.Customer.LastName,
+                            Nic = rental.Customer.Nic,
+                            PhoneNumber= rental.Customer.PhoneNumber,
+                            JoinDate= rental.Customer.JoinDate
+                            
+                        }
+
+
+
+                    };
+
+                    return rentalViewModel;
+                }).ToList(); // Convert IEnumerable to List
+
+                return rentalViewModels;
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (logging, re-throwing, etc.)
+                throw new Exception("An error occurred while retrieving all rentals.", ex);
+            }
         }
+
 
         public async Task<Rental> GetRentalById(Guid id)
         {
@@ -80,7 +152,6 @@ namespace DvdShop.Services
 
                 var user = await _customerRepository.GetUserById(rental.CustomerId);
 
-
                 // Send email notification
                 var customerEmail = user.Email;
                 var subject = "Your Rental Has Been Approved";
@@ -95,6 +166,19 @@ namespace DvdShop.Services
                 rental.ApprovedDate = DateTime.UtcNow;
                 rental.Status = RentalStatus.Approved;  // Correctly assign the enum value
                 await _rentalRepository.UpdateRental(rental);  // Call UpdateRental method to update the rental in the database
+
+                // Process payment after rental is approved
+                var payment = await _paymentService.ProcessPayment(rental);
+
+                // If payment is successfully processed, you can log or perform any additional logic here
+                if (payment != null)
+                {
+                    _logger.LogInformation($"Payment successfully processed for Rental ID: {rental.Id}. Amount: {payment.Amount}");
+                }
+                else
+                {
+                    _logger.LogWarning($"Payment processing failed for Rental ID: {rental.Id}");
+                }
             }
         }
 
@@ -149,7 +233,9 @@ namespace DvdShop.Services
                 RentalDays = createRentalDto.RentalDays,
                 Status = RentalStatus.Request,
                 RequestDate = DateTime.UtcNow,
-                DVD = dvd // Make sure the DVD is assigned to the rental
+                DVD = dvd ,// Make sure the DVD is assigned to the rental
+                Copies=createRentalDto.CopySofDvd
+                
             };
 
             // Decrease available copies of the DVD
@@ -259,6 +345,11 @@ namespace DvdShop.Services
                            "Your Rental Service Team";
 
                 await _emailService.SendEmailAsync(customerEmail, subject, body, isHtml: false);
+                if (rental.DVD != null)
+                {
+                    rental.DVD.Inventory.AvailableCopies++;  // Increment the available copies of the DVD
+                    await _managerRepository.UpdateDvd(rental.DVD);  // Update the DVD entity in the repository
+                }
             }
 
             // Update rental status to Approved (Enum value)
